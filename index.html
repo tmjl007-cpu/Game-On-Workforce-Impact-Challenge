@@ -258,29 +258,6 @@ height: clamp(100px, 28vw, 150px);
   100%{ transform: translate3d(0,0,0) scale(1); }
 }
 
-    .bubble{
-  position: absolute;
-  left: 0; top: 0;
-  width: clamp(120px, 34vw, 180px);
-  height: clamp(120px, 34vw, 180px);
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 14px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  background:
-    radial-gradient(circle at 30% 25%,
-      rgba(255,255,255,.95) 0%,
-      rgba(255,255,255,.55) 28%,
-      rgba(60,141,204,.20) 55%,
-      rgba(11,31,77,.10) 100%);
-  border: 2px solid rgba(11,31,77,.18);
-  box-shadow: 0 10px 24px rgba(0,0,0,.10);
-  transform: translate3d(0,0,0);
-}
 
 /* 👇 PASTE RIGHT HERE */
 
@@ -853,7 +830,73 @@ height: clamp(100px, 28vw, 150px);
   border-radius:12px;
   font-weight:900;
 }
-    
+    /* ---------- Page 1: Game-only layout ---------- */
+.gameOnly{
+  width:min(980px, 100%);
+}
+
+.gamePanel{
+  padding:20px;
+}
+
+.gameHeader{
+  text-align:left;
+  margin-bottom:12px;
+}
+
+/* Make bubble stage the hero */
+.bubbleStage{
+  height: 560px; /* bigger hero stage */
+}
+
+@media (max-width: 620px){
+  .bubbleStage{
+    height: 56vh;
+    min-height: 420px;
+  }
+}
+
+.gameFooter{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Progress bar */
+.progressWrap{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.progressTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:950;
+  color: var(--navy);
+  font-size:13px;
+}
+
+.progressBar{
+  width:100%;
+  height:12px;
+  border-radius:999px;
+  background: rgba(11,31,77,.10);
+  border:1px solid rgba(11,31,77,.12);
+  overflow:hidden;
+}
+
+.progressFill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background: linear-gradient(90deg, var(--blue), var(--magenta));
+  transition: width .35s ease;
+}
+
   </style>
 </head>
 
@@ -880,30 +923,46 @@ height: clamp(100px, 28vw, 150px);
     </div>
   </div>
 
-  <!-- Game Container -->
-  <div id="gameContainer" class="hidden">
-    <div class="app">
-      <div class="panel">
-        <h3 class="h">Pick your priorities</h3>
-        <p class="sub">Select up to <b>3</b> priorities into the Spotlight. The spotlight gets brighter as you lock in what matters most.</p>
-        <div id="bubbleStage" class="bubbleStage" aria-label="Pop priorities bubbles"></div>
+ <!-- Game Container -->
+<div id="gameContainer" class="hidden">
+
+  <div class="gameOnly">
+    <div class="panel gamePanel">
+
+      <!-- Header -->
+      <div class="gameHeader">
+        <h3 class="h">Pop 3 Priorities That Matter Most</h3>
+        <p class="sub">Tap 3 to unlock your Spotlight.</p>
       </div>
 
-      <div class="spotwrap">
-        <div class="spot" id="spot" aria-label="Spotlight Circle drop zone">
-          <div class="spotInner">
-            <div class="count" id="count">Choose the 3 priorities to spotlight.</div>
-            <div class="picked" id="picked"></div>
+      <!-- Bubble Stage -->
+      <div id="bubbleStage" class="bubbleStage" aria-label="Pop priorities bubbles"></div>
+
+      <!-- Footer -->
+      <div class="gameFooter">
+
+        <!-- Progress -->
+        <div class="progressWrap">
+          <div class="progressTop">
+            <div class="progressText" id="progressText">0 of 3 selected</div>
+          </div>
+          <div class="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0">
+            <div class="progressFill" id="progressFill" style="width:0%;"></div>
           </div>
         </div>
-        <div class="msg" id="msg"></div>
-        <div class="btnrow">
-          <button class="secondary" id="resetBtn">Reset</button>
-          <button id="continueBtn" disabled>Continue</button>
-        </div>
-      </div>
 
+        <!-- Message -->
+        <div class="msg" id="msg"></div>
+
+        <!-- Buttons -->
+        <div class="btnrow">
+          <button class="secondary" id="resetBtn" type="button">Reset</button>
+          <button id="continueBtn" type="button" disabled>Continue</button>
+        </div>
+
+      </div>
     </div>
+  </div>
 
     <!-- Results Overlay -->
     <div id="resultsOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Results">
@@ -1254,12 +1313,12 @@ That’s visibility.`
 };
 
   const bubbleStage = document.getElementById("bubbleStage");
-const spotEl = document.getElementById("spot");
-const pickedEl = document.getElementById("picked");
-const countEl = document.getElementById("count");
 const msgEl = document.getElementById("msg");
 const resetBtn = document.getElementById("resetBtn");
 const continueBtn = document.getElementById("continueBtn");
+
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
 
   // ✅ add these RIGHT HERE (before let bubbles...)
 const introScreen = document.getElementById("introScreen");
@@ -1488,48 +1547,37 @@ function handleBubblePop(b){
   }, 240);
 }
 function renderPicked(){
-
-  pickedEl.innerHTML = "";
-
-  picked.forEach(id=>{
-    const item = data.find(x=>x.id===id);
-    const tag = document.createElement("div");
-    tag.className = "tag";
-    tag.innerHTML = `
-      <span>${item.label}</span>
-      <button class="x" aria-label="Remove ${item.label}">×</button>
-    `;
-    tag.querySelector("button").addEventListener("click", ()=>removePick(id));
-    pickedEl.appendChild(tag);
-  });
-
   const n = picked.length;
 
-if (n === 0){
-  countEl.textContent = "Choose up to 3 priorities to spotlight.";
-}
-else if (n === 1){
-  countEl.textContent = "Good start.";
-}
-else if (n === 2){
-  countEl.textContent = "Almost there.";
-}
-else if (n === 3){
-  countEl.textContent = "Spotlight locked in.";
-}
-  continueBtn.disabled = picked.length !== MAX;
+  // Calculate percentage (0–100)
+  const pct = Math.round((n / MAX) * 100);
 
-  // Stronger brightness ramp
-  const t = n / MAX;
-  const ease = t * t;
+  // Update progress bar fill
+  if (progressFill){
+    progressFill.style.width = pct + "%";
+  }
 
-  spotEl.style.setProperty("--b", (0.12 + 0.55*ease).toFixed(2));
-  spotEl.style.setProperty("--g", (0.10 + 0.70*ease).toFixed(2));
-  spotEl.style.setProperty("--glow", (18 + 160*ease).toFixed(0) + "px");
+  // Update progress text
+  if (progressText){
+    progressText.textContent = `${n} / ${MAX} selected`;
+  }
 
-  if (n === MAX){
-    spotEl.classList.add("lockedIn");
-    setTimeout(()=>spotEl.classList.remove("lockedIn"), 450);
+  // Enable Continue only when exactly 3 selected
+  if (continueBtn){
+    continueBtn.disabled = (n !== MAX);
+  }
+
+  // Optional helper message under the bar
+  if (msgEl){
+    if (n === 0){
+      msgEl.textContent = "Tap 3 priorities to unlock your Spotlight.";
+    }
+    else if (n < MAX){
+      msgEl.textContent = `Tap ${MAX - n} more to continue.`;
+    }
+    else {
+      msgEl.textContent = "Unlocked. Hit Continue!";
+    }
   }
 }
 
