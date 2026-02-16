@@ -1132,12 +1132,13 @@ const startOverBtn = document.getElementById("startOverBtn");
 
 // ---- START BUTTON (single source of truth) ----
 function startGame(e){
-  if (e) { try{ e.preventDefault(); }catch(_){} }
-  enterGame();
-}
+  if (e) { try { e.preventDefault(); } catch(_){} }
+
   if (introScreen) introScreen.classList.add("hidden");
   if (gameContainer) gameContainer.classList.remove("hidden");
+
   window.scrollTo(0,0);
+  enterGame();
 }
 
 window.startGame = startGame;
