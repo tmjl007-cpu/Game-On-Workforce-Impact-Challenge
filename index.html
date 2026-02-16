@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Game On: Workforce Impact Challenge</title>
+  <title>Priority Power-Up: Bubble Pop</title>
   <style>
     :root{
       --navy:#0B1F4D;
@@ -13,11 +13,8 @@
       --orange:#F5A623;
       --light-blue:#EAF2FA;
       --white:#ffffff;
-
-      --text: var(--navy);
       --muted:#5F6B8A;
     }
-
     *{ box-sizing:border-box; }
 
     body{
@@ -31,19 +28,13 @@
       justify-content:center;
       padding:24px;
     }
-
     .hidden{ display:none !important; }
 
-    /* ---------- Intro Screen ---------- */
     .screen{
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
       background: radial-gradient(1200px 600px at 50% 20%, #1C4C8F 0%, var(--navy) 60%);
-      padding:24px;
-      z-index: 1200;
+      padding:24px; z-index:1200;
     }
     .introCard{
       width:min(760px, 100%);
@@ -76,27 +67,18 @@
       color: rgba(255,255,255,.92);
       line-height:1.25;
     }
-    .introActions{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
 
-    /* ---------- Panels ---------- */
     .panel{
       width:min(980px, 100%);
       background: var(--light-blue);
       border:1px solid rgba(11,31,77,.12);
       border-radius:18px;
       padding:18px;
-      color: var(--text);
+      color: var(--navy);
       box-shadow: 0 10px 26px rgba(0,0,0,.10);
     }
     .h{
       font-weight:950;
-      letter-spacing:.2px;
       margin:0 0 8px 0;
       font-size:22px;
       color: var(--navy);
@@ -109,8 +91,7 @@
       font-weight:700;
     }
 
-    /* ---------- HUD ---------- */
-    .powerupHud{
+    .hud{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
@@ -141,8 +122,7 @@
       white-space:nowrap;
     }
 
-    /* ---------- Stage ---------- */
-    .powerupStage{
+    .stage{
       position:relative;
       width:100%;
       height:440px;
@@ -151,45 +131,40 @@
       border:1px solid rgba(11,31,77,.12);
       background: radial-gradient(900px 420px at 50% 20%, rgba(60,141,204,.20) 0%, rgba(11,31,77,.06) 55%, rgba(11,31,77,.02) 100%);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
-      touch-action: none;
+      touch-action: manipulation; /* tap-friendly */
     }
     @media (max-width: 620px){
-      .powerupStage{ height:400px; }
+      .stage{ height:400px; }
     }
-    #powerupCanvas{
+    #c{
       width:100%;
       height:100%;
       display:block;
     }
 
-    .powerupOverlay{
-      position:absolute;
-      inset:0;
+    .overlay{
+      position:absolute; inset:0;
       display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      text-align:center;
+      align-items:center; justify-content:center;
+      padding:18px; text-align:center;
       font-weight:950;
       color: var(--navy);
       background: rgba(234,242,250,.80);
       backdrop-filter: blur(3px);
       border-radius:18px;
-      opacity:0;
-      pointer-events:none;
+      opacity:0; pointer-events:none;
       transition: opacity .18s ease;
     }
-    .powerupOverlay.show{ opacity:1; }
+    .overlay.show{ opacity:1; }
 
-    /* ---------- Picks ---------- */
-    .powerupPicked{
+    .picked{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       margin-top:12px;
       min-height:42px;
     }
-    .powerupTag{
+    .tag{
       display:inline-flex;
       align-items:center;
       gap:10px;
@@ -201,12 +176,11 @@
       font-weight:950;
       font-size:13px;
     }
-    .powerupTag small{
+    .tag small{
       font-weight:900;
-      color: rgba(11,31,77,.65);
+      color: rgba(11,31,77,.60);
     }
 
-    /* ---------- Buttons ---------- */
     .btnrow{
       display:flex;
       gap:12px;
@@ -243,167 +217,32 @@
       font-size:13px;
       font-weight:900;
     }
-
-    /* ---------- Results ---------- */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background: rgba(8,23,53,.80);
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      z-index:999;
-      padding:16px 14px;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-    .modal{
-      width:min(760px, 100%);
-      background: var(--light-blue);
-      border:1px solid rgba(11,31,77,.12);
-      border-radius:18px;
-      padding:22px;
-      text-align:left;
-      box-shadow: 0 18px 60px rgba(0,0,0,.45);
-      color: var(--navy);
-      margin:12px auto;
-      max-height: calc(100vh - 32px);
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-    .modalTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .title{
-      margin:0;
-      font-size:20px;
-      font-weight:950;
-      letter-spacing:.2px;
-      color: var(--navy);
-    }
-    .subtext{
-      margin:6px 0 0 0;
-      color: var(--muted);
-      font-size:13px;
-      line-height:1.4;
-      font-weight:800;
-    }
-    .closeBtn{
-      width:auto;
-      flex:0 0 auto;
-      padding:8px 10px;
-      border-radius:12px;
-      background: rgba(255,255,255,.70);
-      border:1px solid rgba(11,31,77,.12);
-      font-weight:950;
-      cursor:pointer;
-      color: var(--navy);
-      box-shadow:none;
-    }
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:14px;
-    }
-    .chip{
-      padding:8px 12px;
-      border-radius:999px;
-      background: rgba(230,0,126,.10);
-      border:2px solid var(--magenta);
-      font-size:12px;
-      font-weight:950;
-      color: var(--navy);
-    }
-    .box{
-      margin-top:16px;
-      padding:14px;
-      border-radius:14px;
-      background: rgba(255,255,255,.85);
-      border:1px solid rgba(11,31,77,.10);
-    }
-    .boxtitle{
-      margin:0 0 6px 0;
-      font-size:14px;
-      font-weight:950;
-    }
-    .boxtext{
-      margin:0;
-      color: var(--muted);
-      font-size:13px;
-      line-height:1.45;
-      font-weight:800;
-    }
-    .gameGrid{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:10px;
-    }
-    @media (max-width: 620px){
-      .gameGrid{ grid-template-columns: 1fr; }
-    }
-    .gameCard{
-      border-radius:16px;
-      padding:14px;
-      background: var(--white);
-      border:1px solid rgba(11,31,77,.10);
-      border-left:6px solid var(--magenta);
-      box-shadow: 0 6px 18px rgba(0,0,0,.08);
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .gameName{ font-weight:950; font-size:14px; color: var(--navy); }
-    .gameWhy{ color: var(--muted); font-size:12px; font-weight:800; line-height:1.35; }
-    .miniTagRow{ display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
-    .miniTag{
-      font-size:11px;
-      padding:4px 8px;
-      border-radius:999px;
-      background: rgba(60,141,204,.10);
-      border:1px solid rgba(60,141,204,.28);
-      color: var(--navy);
-      font-weight:900;
-    }
-
-    .impactTagline{
-      margin-top:18px;
-      text-align:center;
-      font-size:14px;
-      font-weight:950;
-      color: var(--navy);
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- Intro Screen -->
-  <div id="introScreen" class="screen" role="dialog" aria-modal="true" aria-label="Intro">
+  <!-- Intro -->
+  <div id="intro" class="screen" role="dialog" aria-modal="true" aria-label="Intro">
     <div class="introCard">
       <div class="introSubtitle">Gratia Health presents</div>
-      <h1 class="introTitle">Game On: Workforce Impact Challenge</h1>
-      <div class="introTagline">Healthcare Leaders: What’s Driving Performance in Your System?</div>
-
-      <div class="introActions">
-        <button id="startBtn" type="button">Start the Game</button>
+      <h1 class="introTitle">Priority Power-Up</h1>
+      <div class="introTagline">Tap bubbles to pop your top 3 workforce priorities.</div>
+      <div style="margin-top:12px;">
+        <button id="startBtn" type="button">Start</button>
       </div>
     </div>
   </div>
 
-  <!-- Game Container -->
-  <div id="gameContainer" class="hidden">
+  <!-- Game -->
+  <div id="app" class="hidden">
     <div class="panel">
       <h3 class="h">Priority Power-Up</h3>
       <p class="sub">
-        Catch <b>3</b> workforce priorities in your basket. Keep catching to adjust — then tap <b>Continue</b>.
+        Tap a bubble to <b>pop</b> it. Pick <b>3</b>. If you pop a 4th, it replaces your <b>most recent</b> pick.
       </p>
 
-      <div class="powerupHud">
+      <div class="hud">
         <div class="hudItem">
           <div class="hudLabel">Time</div>
           <div class="hudValue" id="timeLeft">25</div>
@@ -414,18 +253,16 @@
         </div>
         <div class="hudItem">
           <div class="hudLabel">How to play</div>
-          <div class="hudValue">← → or drag</div>
+          <div class="hudValue">Tap bubbles</div>
         </div>
       </div>
 
-      <div class="powerupStage" id="stage" aria-label="Basket catch game">
-        <canvas id="powerupCanvas"></canvas>
-        <div class="powerupOverlay show" id="overlay">
-          Ready? Catch <b>3</b> priorities.
-        </div>
+      <div class="stage" id="stage">
+        <canvas id="c"></canvas>
+        <div class="overlay show" id="overlay">Ready? Pop <b>3</b> priorities.</div>
       </div>
 
-      <div class="powerupPicked" id="pickedWrap"></div>
+      <div class="picked" id="pickedWrap"></div>
 
       <div class="btnrow">
         <button class="secondary" id="resetBtn" type="button">Reset</button>
@@ -436,36 +273,14 @@
     </div>
   </div>
 
-  <!-- Results Overlay -->
-  <div id="resultsOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Results">
-    <div class="modal">
-      <div class="modalTop">
-        <div>
-          <h2 class="title">Your Spotlight</h2>
-          <p class="subtext">Your priorities — and the Gratia games aligned to them.</p>
-        </div>
-        <button class="closeBtn" id="closeResultsBtn" aria-label="Close results">✕</button>
-      </div>
-
-      <div class="chips" id="resultsChips"></div>
-
-      <div class="box">
-        <div class="boxtitle" id="recTitle">Recommended focus</div>
-        <p class="boxtext" id="recText"></p>
-      </div>
-
-      <div class="title" style="margin-top:18px;">Aligned games</div>
-      <div class="gameGrid" id="gameGrid"></div>
-
-      <div class="impactTagline">We make everyday work visible and appreciated — in real time.</div>
-    </div>
-  </div>
-
 <script>
 /* =========================
-   PRIORITIES + ALIGNMENT
+   CONFIG
 ========================= */
+const MAX = 3;
+const TIMER_SEC = 25;
 
+// 6 priorities only
 const PRIORITIES = [
   { id:"px",        label:"Patient Experience", emoji:"❤️" },
   { id:"quality",   label:"Quality & Safety",   emoji:"🛡️" },
@@ -474,73 +289,6 @@ const PRIORITIES = [
   { id:"culture",   label:"Team Culture",       emoji:"🤝" },
   { id:"staffing",  label:"Staffing Stability", emoji:"📅" },
 ];
-
-// game mapping (edit as you want)
-const gameMap = {
-  retention:  { name:"Living Legends",     why:"Recognize impact and keep high performers engaged.", tags:["Retention","Culture"] },
-  px:         { name:"Compliment Circle",  why:"Turn patient praise into repeatable service behaviors.", tags:["HCAHPS","Service"] },
-  quality:    { name:"Care IQ",            why:"Build confidence with bite-sized learning.", tags:["EBP","Quality"] },
-  staffing:   { name:"Shift Pick-Up",      why:"Drive internal fill and reduce contract labor reliance.", tags:["Coverage","Cost"] },
-  culture:    { name:"Compliment Circle",  why:"Boost connection and belonging across shifts.", tags:["Morale","Engagement"] },
-  onboarding: { name:"New Hire Navigator", why:"Accelerate ramp with structured reinforcement.", tags:["Ramp","Onboarding"] },
-};
-
-function labelFor(id){
-  return (PRIORITIES.find(p=>p.id===id) || {}).label || id;
-}
-
-/* =========================
-   DOM
-========================= */
-
-const introScreen = document.getElementById("introScreen");
-const startBtn = document.getElementById("startBtn");
-const gameContainer = document.getElementById("gameContainer");
-
-const stage = document.getElementById("stage");
-const canvas = document.getElementById("powerupCanvas");
-const overlay = document.getElementById("overlay");
-
-const timeLeftEl = document.getElementById("timeLeft");
-const poweredCountEl = document.getElementById("poweredCount");
-const pickedWrap = document.getElementById("pickedWrap");
-const msgEl = document.getElementById("msg");
-
-const resetBtn = document.getElementById("resetBtn");
-const continueBtn = document.getElementById("continueBtn");
-
-const resultsOverlay = document.getElementById("resultsOverlay");
-const closeResultsBtn = document.getElementById("closeResultsBtn");
-const resultsChips = document.getElementById("resultsChips");
-const recTitleEl = document.getElementById("recTitle");
-const recTextEl = document.getElementById("recText");
-const gameGrid = document.getElementById("gameGrid");
-
-/* =========================
-   GAME STATE
-========================= */
-
-const MAX = 3;
-
-let ctx = null;
-let DPR = 1;
-
-let picked = [];
-let game = null;
-
-function fitCanvas(){
-  const rect = stage.getBoundingClientRect();
-  DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  canvas.width  = Math.floor(rect.width * DPR);
-  canvas.height = Math.floor(rect.height * DPR);
-  canvas.style.width  = rect.width + "px";
-  canvas.style.height = rect.height + "px";
-  ctx = canvas.getContext("2d");
-  // draw using CSS pixels
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-}
-
-function rand(a,b){ return a + Math.random()*(b-a); }
 
 function pickColor(id){
   const map = {
@@ -554,137 +302,208 @@ function pickColor(id){
   return map[id] || "rgba(11,31,77,.12)";
 }
 
-function showOverlay(html){
-  overlay.innerHTML = html;
-  overlay.classList.add("show");
-}
-function hideOverlay(){
-  overlay.classList.remove("show");
+function labelFor(id){
+  return (PRIORITIES.find(p=>p.id===id) || {}).label || id;
 }
 
+/* =========================
+   DOM
+========================= */
+const intro = document.getElementById("intro");
+const startBtn = document.getElementById("startBtn");
+const app = document.getElementById("app");
+
+const stage = document.getElementById("stage");
+const canvas = document.getElementById("c");
+const overlay = document.getElementById("overlay");
+
+const timeLeftEl = document.getElementById("timeLeft");
+const poweredCountEl = document.getElementById("poweredCount");
+const pickedWrap = document.getElementById("pickedWrap");
+const msgEl = document.getElementById("msg");
+const resetBtn = document.getElementById("resetBtn");
+const continueBtn = document.getElementById("continueBtn");
+
+/* =========================
+   STATE
+========================= */
+let ctx = null;
+let DPR = 1;
+
+let picked = [];   // keep max 3 (but replacement rule differs)
+let bubbles = [];
+let pops = [];     // explosion particles
+let running = false;
+
+let startAt = 0;
+let lastAt = 0;
+let raf = 0;
+
+let nextSpawnAt = 0;
+const SPAWN_EVERY_MS = 950;     // slower + spaced out
+const MAX_ON_SCREEN = 3;        // keeps it manageable
+
+/* =========================
+   CANVAS
+========================= */
+function fitCanvas(){
+  const rect = stage.getBoundingClientRect();
+  DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  canvas.width  = Math.floor(rect.width * DPR);
+  canvas.height = Math.floor(rect.height * DPR);
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+  ctx = canvas.getContext("2d");
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+function rand(a,b){ return a + Math.random()*(b-a); }
+
+/* =========================
+   PICK LOGIC (your rule)
+   - pick 1..3 fill
+   - if pick 4th replaces LAST pick (slot 3)
+========================= */
 function renderPicked(){
   poweredCountEl.textContent = String(Math.min(picked.length, MAX));
-
   pickedWrap.innerHTML = "";
+
   picked.forEach((id, idx)=>{
     const tag = document.createElement("div");
-    tag.className = "powerupTag";
-    tag.innerHTML = `<span>${labelFor(id)}</span> <small>${idx===0 ? "oldest" : (idx===picked.length-1 ? "newest" : "")}</small>`;
+    tag.className = "tag";
+    const meta = (idx === picked.length-1) ? "last" : "";
+    tag.innerHTML = `<span>${labelFor(id)}</span>${meta ? `<small>${meta}</small>` : ""}`;
     pickedWrap.appendChild(tag);
   });
 
-  continueBtn.disabled = (picked.length < MAX);
+  continueBtn.disabled = picked.length < MAX;
 }
 
-let completeOverlayTimer = null;
-
+let completeTimer = null;
 function showCompleteOverlay(){
   const lines = picked.slice(0,MAX).map(id=>`<li>${labelFor(id)}</li>`).join("");
-  showOverlay(`
+  overlay.innerHTML = `
     <div>
       <div style="font-size:18px; font-weight:950; margin-bottom:8px;">Power-Up Complete</div>
-      <div style="opacity:.85; margin-bottom:10px;">You captured:</div>
+      <div style="opacity:.85; margin-bottom:10px;">You powered up:</div>
       <ul style="margin:0; padding-left:18px; text-align:left;">${lines}</ul>
-      <div style="margin-top:12px; font-size:12px; opacity:.8;">
-        Keep catching to adjust — or tap <b>Continue</b>.
-      </div>
+      <div style="margin-top:12px; font-size:12px; opacity:.8;">Tap <b>Continue</b> to move on.</div>
     </div>
-  `);
+  `;
+  overlay.classList.add("show");
 
-  if(completeOverlayTimer) clearTimeout(completeOverlayTimer);
-  completeOverlayTimer = setTimeout(()=>hideOverlay(), 1400);
+  if(completeTimer) clearTimeout(completeTimer);
+  completeTimer = setTimeout(()=> overlay.classList.remove("show"), 1200);
 }
 
 function addPick(id){
+  // ignore if already in list (optional: you can allow re-picking to “refresh”)
   if(picked.includes(id)) return;
 
   if(picked.length < MAX){
     picked.push(id);
   } else {
-    // replace oldest with newest
-    picked.shift();
-    picked.push(id);
-
-    msgEl.textContent = "Updated your priorities (replaced the oldest pick).";
+    // Replace LAST (most recent) pick
+    picked[picked.length - 1] = id;
+    msgEl.textContent = "Updated your priorities (replaced the last pick).";
     setTimeout(()=>{ msgEl.textContent = ""; }, 900);
   }
 
   renderPicked();
 
-  if(picked.length >= MAX){
+  if(picked.length === MAX){
     showCompleteOverlay();
   }
 }
 
-function resetPicks(){
-  picked = [];
-  renderPicked();
-  msgEl.textContent = "";
-  showOverlay('Ready? Catch <b>3</b> priorities.');
-}
-
-function createToken(){
+/* =========================
+   BUBBLES
+========================= */
+function makeBubble(){
   const rect = stage.getBoundingClientRect();
   const p = PRIORITIES[Math.floor(Math.random()*PRIORITIES.length)];
 
-  // wider tokens so they read on mobile
-  const w = rand(150, 210);
-  const h = rand(44, 56);
-
-  // spawn x spread out
-  const x = rand(18, rect.width - w - 18);
-  const y = -rand(60, 180);
+  const r = rand(36, 48);   // bigger for iPhone
+  const x = rand(r + 12, rect.width - r - 12);
+  const y = -rand(80, 180);
 
   // slower fall
-  const vy = rand(58, 82);
-
-  // very light horizontal drift
-  const vx = rand(-12, 12);
-
-  return { ...p, x, y, w, h, vx, vy };
-}
-
-function createGame(){
-  const rect = stage.getBoundingClientRect();
-
-  const basket = {
-    x: rect.width/2,
-    y: rect.height - 42,
-    w: 170,
-    h: 44,
-    vx: 0,
-    speed: 560,
-    dragging: false,
-  };
+  const vy = rand(55, 80);
+  // gentle drift
+  const vx = rand(-10, 10);
 
   return {
-    state: "IDLE",
-    tokens: [],
-    basket,
-    startAt: 0,
-    lastAt: 0,
-    timeLeft: 25,
-    timerSec: 25,
-    spawnEvery: 1200,
-    nextSpawn: 0,
-    raf: 0,
-    maxTokens: 2,
+    id: p.id,
+    label: p.label,
+    emoji: p.emoji,
+    x, y, r, vx, vy,
   };
 }
 
-function roundRect(ctx, x, y, w, h, r){
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+w, y, x+w, y+h, r);
-  ctx.arcTo(x+w, y+h, x, y+h, r);
-  ctx.arcTo(x, y+h, x, y, r);
-  ctx.arcTo(x, y, x+w, y, r);
-  ctx.closePath();
+function spawnIfNeeded(now){
+  if(now < nextSpawnAt) return;
+  nextSpawnAt = now + SPAWN_EVERY_MS + rand(-150, 150);
+
+  if(bubbles.length >= MAX_ON_SCREEN) return;
+
+  // try not to spawn duplicates on screen too often
+  const attempts = 4;
+  for(let i=0;i<attempts;i++){
+    const b = makeBubble();
+    const exists = bubbles.some(x=>x.id===b.id);
+    if(!exists || Math.random() < 0.35){
+      bubbles.push(b);
+      return;
+    }
+  }
+  bubbles.push(makeBubble());
 }
 
-function draw(){
-  if(!ctx || !game) return;
+/* =========================
+   POP / EXPLOSION
+========================= */
+function popBubble(b){
+  // add pick
+  addPick(b.id);
 
+  // explosion particles
+  const count = 18 + Math.floor(Math.random()*8);
+  for(let i=0;i<count;i++){
+    const ang = Math.random()*Math.PI*2;
+    const sp = 70 + Math.random()*160;
+    pops.push({
+      x: b.x,
+      y: b.y,
+      vx: Math.cos(ang)*sp,
+      vy: Math.sin(ang)*sp,
+      r: 2 + Math.random()*4,
+      life: 0,
+      max: 0.35 + Math.random()*0.25,
+      color: Math.random() < 0.5 ? "rgba(230,0,126,.95)" : "rgba(60,141,204,.95)"
+    });
+  }
+
+  // remove bubble
+  bubbles = bubbles.filter(x=>x !== b);
+}
+
+/* =========================
+   HIT TEST
+========================= */
+function findBubbleAt(x,y){
+  // topmost first
+  for(let i=bubbles.length-1; i>=0; i--){
+    const b = bubbles[i];
+    const dx = x - b.x;
+    const dy = y - b.y;
+    if(Math.sqrt(dx*dx + dy*dy) <= b.r) return b;
+  }
+  return null;
+}
+
+/* =========================
+   DRAW
+========================= */
+function draw(){
   const rect = stage.getBoundingClientRect();
   const W = rect.width, H = rect.height;
 
@@ -696,322 +515,194 @@ function draw(){
   ctx.strokeStyle = "rgba(11,31,77,.35)";
   ctx.lineWidth = 1;
   const step = 46;
-  for(let x=0; x<=W; x+=step){
-    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  for(let gx=0; gx<=W; gx+=step){
+    ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke();
   }
-  for(let y=0; y<=H; y+=step){
-    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  for(let gy=0; gy<=H; gy+=step){
+    ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
   }
   ctx.restore();
 
-  // tokens as rounded “cards”
-  game.tokens.forEach(t=>{
+  // bubbles
+  bubbles.forEach(b=>{
     ctx.save();
-    ctx.fillStyle = pickColor(t.id);
+
+    // bubble fill
+    ctx.fillStyle = pickColor(b.id);
     ctx.strokeStyle = "rgba(11,31,77,.18)";
     ctx.lineWidth = 2;
 
-    roundRect(ctx, t.x, t.y, t.w, t.h, 18);
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
     ctx.fill();
     ctx.stroke();
+
+    // highlight
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = "rgba(255,255,255,.9)";
+    ctx.beginPath();
+    ctx.arc(b.x - b.r*0.35, b.y - b.r*0.35, b.r*0.28, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
 
     // emoji
     ctx.fillStyle = "rgba(11,31,77,.95)";
     ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-    ctx.textAlign = "left";
+    ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(t.emoji, t.x + 14, t.y + t.h/2);
+    ctx.fillText(b.emoji, b.x, b.y - 10);
 
     // label
-    ctx.font = "950 14px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-    ctx.fillText(t.label, t.x + 44, t.y + t.h/2);
+    ctx.font = "950 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+    ctx.fillText(b.label, b.x, b.y + 14);
 
     ctx.restore();
   });
 
-  // basket
-  const b = game.basket;
-  const bx = b.x - b.w/2;
-  const by = b.y - b.h/2;
-
-  ctx.save();
-  ctx.fillStyle = "rgba(230,0,126,.92)";
-  ctx.strokeStyle = "rgba(255,255,255,.82)";
-  ctx.lineWidth = 2;
-
-  roundRect(ctx, bx, by, b.w, b.h, 18);
-  ctx.fill();
-  ctx.stroke();
-
-  // basket lip
-  ctx.strokeStyle = "rgba(11,31,77,.70)";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(bx + 14, by + 12);
-  ctx.lineTo(bx + b.w - 14, by + 12);
-  ctx.stroke();
-
-  // little handle arc
-  ctx.strokeStyle = "rgba(255,255,255,.60)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(b.x, by + 10, 18, Math.PI, 0);
-  ctx.stroke();
-
-  ctx.restore();
+  // particles
+  pops.forEach(p=>{
+    ctx.save();
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = Math.max(0, 1 - (p.life / p.max));
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  });
 }
 
-function startGameLoop(){
-  fitCanvas();
-  hideOverlay();
+/* =========================
+   LOOP
+========================= */
+function tick(now){
+  if(!running) return;
 
-  if(!game) game = createGame();
+  if(!lastAt) lastAt = now;
+  const dt = Math.min(0.033, (now - lastAt)/1000);
+  lastAt = now;
 
-  game.tokens = [];
-  game.state = "RUNNING";
-  game.startAt = performance.now();
-  game.lastAt = 0;
-  game.nextSpawn = performance.now() + 250;
+  // timer
+  const elapsed = (now - startAt)/1000;
+  const timeLeft = Math.max(0, TIMER_SEC - elapsed);
+  timeLeftEl.textContent = String(Math.ceil(timeLeft));
 
-  game.raf && cancelAnimationFrame(game.raf);
-  game.raf = requestAnimationFrame(step);
+  // spawn slower + spaced
+  spawnIfNeeded(now);
 
-  msgEl.textContent = "Catch 3 priorities. Keep catching to update your list.";
-}
-
-function stopGameLoop(){
-  if(!game) return;
-  game.state = "STOPPED";
-  if(game.raf) cancelAnimationFrame(game.raf);
-  game.raf = 0;
-}
-
-function step(now){
-  if(!game || game.state !== "RUNNING") return;
-
+  // move bubbles
   const rect = stage.getBoundingClientRect();
   const W = rect.width, H = rect.height;
 
-  if(!game.lastAt) game.lastAt = now;
-  const dt = Math.min(0.033, (now - game.lastAt)/1000);
-  game.lastAt = now;
+  bubbles.forEach(b=>{
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
 
-  // timer
-  const elapsed = (now - game.startAt)/1000;
-  game.timeLeft = Math.max(0, game.timerSec - elapsed);
-  timeLeftEl.textContent = String(Math.ceil(game.timeLeft));
-
-  // spawn tokens (cap count on screen)
-  if(now >= game.nextSpawn){
-    if(game.tokens.length < game.maxTokens){
-      game.tokens.push(createToken());
-    }
-    game.nextSpawn = now + game.spawnEvery + rand(-160, 160);
-  }
-
-  // move tokens
-  game.tokens.forEach(t=>{
-    t.x += t.vx * dt;
-    t.y += t.vy * dt;
-
-    // bounce lightly off side
-    if(t.x < 10){ t.x = 10; t.vx *= -1; }
-    if(t.x + t.w > W - 10){ t.x = W - 10 - t.w; t.vx *= -1; }
+    // gentle wall bounce
+    if(b.x < b.r + 10){ b.x = b.r + 10; b.vx *= -1; }
+    if(b.x > W - b.r - 10){ b.x = W - b.r - 10; b.vx *= -1; }
   });
 
-  // move basket
-  const b = game.basket;
-  if(!b.dragging){
-    b.x += b.vx * dt;
-  }
-  b.x = Math.max(b.w/2 + 8, Math.min(W - b.w/2 - 8, b.x));
+  // clear bubbles that fall off
+  bubbles = bubbles.filter(b=> b.y < H + 80);
 
-  // collisions (token card vs basket rect)
-  const bx = b.x - b.w/2;
-  const by = b.y - b.h/2;
+  // particles update
+  pops.forEach(p=>{
+    p.vx *= 0.985;
+    p.vy = p.vy*0.985 + 120*dt; // slight gravity
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.life += dt;
+  });
+  pops = pops.filter(p=> p.life < p.max);
 
-  const kept = [];
-  for(const t of game.tokens){
-    const withinX = (t.x + t.w >= bx) && (t.x <= bx + b.w);
-    const withinY = (t.y + t.h >= by) && (t.y <= by + b.h);
-
-    if(withinX && withinY){
-      addPick(t.id);
-      continue; // remove caught token
-    }
-
-    // keep if still visible
-    if(t.y < H + 80) kept.push(t);
-  }
-  game.tokens = kept;
-
-  // if time ends, still allow continue if >=3; otherwise auto-fill
-  if(game.timeLeft <= 0){
-    if(picked.length < MAX){
-      const remaining = PRIORITIES.map(p=>p.id).filter(id=>!picked.includes(id));
-      while(picked.length < MAX && remaining.length){
-        const i = Math.floor(Math.random()*remaining.length);
-        picked.push(remaining.splice(i,1)[0]);
-      }
-      renderPicked();
-      showCompleteOverlay();
-    }
-    msgEl.textContent = "Time’s up — tap Continue to see your aligned games.";
-    stopGameLoop();
+  // time end
+  if(timeLeft <= 0){
+    running = false;
+    overlay.innerHTML = (picked.length >= MAX)
+      ? `Time’s up. Tap <b>Continue</b>.`
+      : `Time’s up. Pop faster next time — then tap <b>Reset</b>.`;
+    overlay.classList.add("show");
+    continueBtn.disabled = picked.length < MAX;
+    draw();
     return;
   }
 
   draw();
-  game.raf = requestAnimationFrame(step);
+  raf = requestAnimationFrame(tick);
+}
+
+function start(){
+  fitCanvas();
+  picked = [];
+  bubbles = [];
+  pops = [];
+  renderPicked();
+
+  msgEl.textContent = "Tap bubbles to pop your top 3 priorities.";
+  overlay.innerHTML = "Ready? Pop <b>3</b> priorities.";
+  overlay.classList.add("show");
+  setTimeout(()=> overlay.classList.remove("show"), 800);
+
+  running = true;
+  startAt = performance.now();
+  lastAt = 0;
+  nextSpawnAt = performance.now() + 250;
+
+  if(raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
 }
 
 /* =========================
-   INPUT (KEYS + DRAG)
+   INPUT (tap/click)
 ========================= */
-const keys = new Set();
-
-window.addEventListener("keydown", (e)=>{
-  if(!game || game.state !== "RUNNING") return;
-  if(["ArrowLeft","ArrowRight","a","d","A","D"].includes(e.key)){
-    keys.add(e.key);
-    e.preventDefault();
-    updateBasketVelocity();
-  }
-},{ passive:false });
-
-window.addEventListener("keyup", (e)=>{
-  if(!game || game.state !== "RUNNING") return;
-  if(keys.has(e.key)){
-    keys.delete(e.key);
-    updateBasketVelocity();
-  }
-});
-
-function updateBasketVelocity(){
-  if(!game) return;
-  const b = game.basket;
-  const left = keys.has("ArrowLeft") || keys.has("a") || keys.has("A");
-  const right = keys.has("ArrowRight") || keys.has("d") || keys.has("D");
-  if(left && !right) b.vx = -b.speed;
-  else if(right && !left) b.vx = b.speed;
-  else b.vx = 0;
+function pointerToStageXY(e){
+  const rect = stage.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
 
-// pointer drag
+// Click/tap to pop
 stage.addEventListener("pointerdown", (e)=>{
-  if(!game || game.state !== "RUNNING") return;
-  stage.setPointerCapture(e.pointerId);
-  const rect = stage.getBoundingClientRect();
-  game.basket.dragging = true;
-  game.basket.x = e.clientX - rect.left;
-});
-
-stage.addEventListener("pointermove", (e)=>{
-  if(!game || game.state !== "RUNNING") return;
-  if(!game.basket.dragging) return;
-  const rect = stage.getBoundingClientRect();
-  game.basket.x = e.clientX - rect.left;
-});
-
-stage.addEventListener("pointerup", ()=>{
-  if(!game || game.state !== "RUNNING") return;
-  game.basket.dragging = false;
-});
-
-stage.addEventListener("pointercancel", ()=>{
-  if(!game || game.state !== "RUNNING") return;
-  game.basket.dragging = false;
-});
-
-/* =========================
-   RESULTS
-========================= */
-function generateRecommendation(ids){
-  const has = (x)=>ids.includes(x);
-
-  if (has("staffing") && has("retention")){
-    return { title:"Recommended focus: staffing + retention",
-      text:"Stabilize coverage while reinforcing culture-carriers so high performers stay and internal fill rises." };
+  if(!running) return;
+  const {x,y} = pointerToStageXY(e);
+  const b = findBubbleAt(x,y);
+  if(b){
+    // prevent accidental scroll on mobile
+    e.preventDefault();
+    popBubble(b);
   }
-  if (has("quality") && has("px")){
-    return { title:"Recommended focus: quality + experience",
-      text:"Make best-practice behaviors visible and repeatable — so patient communication and quality improve together." };
-  }
-  if (has("onboarding")){
-    return { title:"Recommended focus: faster ramp",
-      text:"Reinforce early behaviors and confidence so new hires ramp faster and early exits drop." };
-  }
-  return { title:"Recommended focus: make the work visible",
-    text:"Turn everyday behaviors into something leaders can reinforce consistently — in real time." };
-}
-
-function showResults(){
-  const top3 = picked.slice(-MAX);
-
-  resultsChips.innerHTML = top3.map(id=>`<div class="chip">${labelFor(id)}</div>`).join("");
-
-  const rec = generateRecommendation(top3);
-  recTitleEl.textContent = rec.title;
-  recTextEl.textContent = rec.text;
-
-  gameGrid.innerHTML = top3.map(id=>{
-    const gm = gameMap[id] || { name:"Gratia Game", why:"Aligned to your selected priority.", tags:[] };
-    const tags = (gm.tags || []).slice(0,3).map(t=>`<span class="miniTag">${t}</span>`).join("");
-    return `
-      <div class="gameCard">
-        <div class="gameName">${gm.name}</div>
-        <div class="gameWhy">${gm.why}</div>
-        <div class="miniTagRow">${tags}</div>
-      </div>
-    `;
-  }).join("");
-
-  resultsOverlay.classList.remove("hidden");
-}
-
-closeResultsBtn.addEventListener("click", ()=> resultsOverlay.classList.add("hidden"));
-resultsOverlay.addEventListener("click", (e)=>{
-  if(e.target === resultsOverlay) resultsOverlay.classList.add("hidden");
-});
+}, { passive:false });
 
 /* =========================
    BUTTONS / FLOW
 ========================= */
-function enterGame(){
-  introScreen.classList.add("hidden");
-  gameContainer.classList.remove("hidden");
-
-  if(!game) game = createGame();
-  resetPicks();
-  fitCanvas();
-
-  // start after a short “ready” beat
-  setTimeout(()=> startGameLoop(), 350);
-
+startBtn.addEventListener("click", ()=>{
+  intro.classList.add("hidden");
+  app.classList.remove("hidden");
   window.scrollTo(0,0);
-}
-
-startBtn.addEventListener("click", enterGame, { passive:false });
-startBtn.addEventListener("touchend", (e)=>{ e.preventDefault(); enterGame(); }, { passive:false });
+  start();
+});
 
 resetBtn.addEventListener("click", ()=>{
-  stopGameLoop();
-  resetPicks();
-  game = createGame();
-  setTimeout(()=> startGameLoop(), 250);
+  running = false;
+  if(raf) cancelAnimationFrame(raf);
+  start();
 });
 
 continueBtn.addEventListener("click", ()=>{
-  // freeze game so they can read results
-  stopGameLoop();
-  hideOverlay();
-  showResults();
+  // You can swap this for your Story/Results overlay
+  overlay.innerHTML = `
+    <div>
+      <div style="font-size:18px; font-weight:950; margin-bottom:8px;">Power-Up Complete</div>
+      <div style="opacity:.85; margin-bottom:10px;">You chose:</div>
+      <div style="font-weight:950;">${picked.slice(0,MAX).map(labelFor).join(" • ")}</div>
+      <div style="margin-top:12px; font-size:12px; opacity:.8;">(Hook this to your next screen.)</div>
+    </div>
+  `;
+  overlay.classList.add("show");
 });
 
 window.addEventListener("resize", ()=>{
-  if(!gameContainer.classList.contains("hidden")){
-    fitCanvas();
-  }
+  if(!app.classList.contains("hidden")) fitCanvas();
 });
 </script>
 
