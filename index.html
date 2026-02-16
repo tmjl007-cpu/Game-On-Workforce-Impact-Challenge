@@ -205,8 +205,8 @@
 .bubble{
   position: absolute;
   left: 0; top: 0;
-  width: clamp(120px, 34vw, 180px);
-  height: clamp(120px, 34vw, 180px);
+  width: clamp(100px, 28vw, 150px);
+height: clamp(100px, 28vw, 150px);
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -258,6 +258,62 @@
   100%{ transform: translate3d(0,0,0) scale(1); }
 }
 
+    .bubble{
+  position: absolute;
+  left: 0; top: 0;
+  width: clamp(120px, 34vw, 180px);
+  height: clamp(120px, 34vw, 180px);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 14px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    radial-gradient(circle at 30% 25%,
+      rgba(255,255,255,.95) 0%,
+      rgba(255,255,255,.55) 28%,
+      rgba(60,141,204,.20) 55%,
+      rgba(11,31,77,.10) 100%);
+  border: 2px solid rgba(11,31,77,.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  transform: translate3d(0,0,0);
+}
+
+/* 👇 PASTE RIGHT HERE */
+
+/* Gratia color variants */
+.bubble.v-magenta{
+  background:
+    radial-gradient(circle at 30% 25%,
+      rgba(255,255,255,.95) 0%,
+      rgba(255,255,255,.55) 28%,
+      rgba(230,0,126,.22) 55%,
+      rgba(11,31,77,.10) 100%);
+  border-color: rgba(230,0,126,.38);
+}
+
+.bubble.v-blue{
+  background:
+    radial-gradient(circle at 30% 25%,
+      rgba(255,255,255,.95) 0%,
+      rgba(255,255,255,.55) 28%,
+      rgba(60,141,204,.24) 55%,
+      rgba(11,31,77,.10) 100%);
+  border-color: rgba(60,141,204,.42);
+}
+
+.bubble.v-orange{
+  background:
+    radial-gradient(circle at 30% 25%,
+      rgba(255,255,255,.95) 0%,
+      rgba(255,255,255,.55) 28%,
+      rgba(245,166,35,.28) 55%,
+      rgba(11,31,77,.10) 100%);
+  border-color: rgba(245,166,35,.48);
+}
      /* Spotlight */
     .spotwrap{
     display:flex;
@@ -1209,6 +1265,19 @@ let bubbles = [];
 let bubbleRAF = null;
 let bubbleRunning = false;
 
+  /* 🔥 ADD THIS RIGHT HERE */
+
+const bubbleVariants = ["v-magenta","v-blue","v-orange"];
+
+function randVariant(){
+  return bubbleVariants[Math.floor(Math.random() * bubbleVariants.length)];
+}
+
+function applyVariant(el){
+  bubbleVariants.forEach(v => el.classList.remove(v));
+  el.classList.add(randVariant());
+}
+
   // Results overlay
   const resultsOverlay = document.getElementById("resultsOverlay");
   const resultsChips = document.getElementById("resultsChips");
@@ -1278,6 +1347,7 @@ function createBubbles(){
   data.forEach((item) => {
     const el = document.createElement("div");
     el.className = "bubble";
+    applyVariant(el);
     el.dataset.id = item.id;
     el.innerHTML = `
       <div>
@@ -1286,10 +1356,34 @@ function createBubbles(){
       </div>
     `;
 
-    const size = Math.min(180, Math.max(120, stageW * 0.34));
-    const x = Math.random() * Math.max(1, (stageW - size));
-    const y = - (Math.random() * 220 + 60); // above the top
-    const speed = 0.55 + Math.random() * 0.55; // slower fall
+    const size = Math.min(150, Math.max(110, stageW * 0.28)); // smaller
+const pad = 14;                                           // spacing between bubbles
+
+// Try to find a non-overlapping x/y (rejection sampling)
+let x = 0;
+let y = 0;
+let tries = 0;
+
+const overlaps = (nx, ny) => {
+  for (const other of bubbles){
+    if (other.popped) continue;
+    const dx = (nx + size/2) - (other.x + other.size/2);
+    const dy = (ny + size/2) - (other.y + other.size/2);
+    const dist = Math.hypot(dx, dy);
+    const minDist = (size/2 + other.size/2 + pad);
+    if (dist < minDist) return true;
+  }
+  return false;
+};
+
+// Start them above the top, but spread across a “band”
+do {
+  x = Math.random() * Math.max(1, (stageW - size));
+  y = - (60 + Math.random() * 260); // -60 to about -320
+  tries++;
+} while (overlaps(x, y) && tries < 60);
+
+const speed = 0.35 + Math.random() * 0.35; // slower
 
     const b = { id: item.id, el, x, y, size, speed, popped: false };
 
@@ -1318,12 +1412,27 @@ function startBubbleLoop(){
     for (const b of bubbles){
       if (b.popped) continue;
 
-      b.y += b.speed * 2.2;
+      b.y += b.speed * 1.35;
 
-      if (b.y > stageH + 40){
-        b.y = - (Math.random() * 240 + 80);
-        b.x = Math.random() * Math.max(1, (stageW - b.size));
-      }
+if (b.y > stageH + 40){
+  b.y = - (Math.random() * 260 + 120);
+  b.x = Math.random() * Math.max(1, (stageW - b.size));
+
+  applyVariant(b.el);  // 🔥 add this line right here
+}
+
+  // re-pick x a few times to avoid stacking on one spot
+  let nx = 0;
+  let t = 0;
+  do {
+    nx = Math.random() * Math.max(1, (stageW - b.size));
+    t++;
+  } while (t < 25 && bubbles.some(o =>
+    o !== b && !o.popped && Math.abs((nx + b.size/2) - (o.x + o.size/2)) < (b.size*0.75)
+  ));
+
+  b.x = nx;
+}
 
       b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
     }
