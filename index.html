@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Priority Power-Up: Bubble Pop</title>
+  <title>Game On: Workforce Impact Challenge</title>
   <style>
-    html, body{
-  width:100%;
-  overflow-x:hidden;
-}
-
     :root{
+      /* Gratia-inspired palette */
       --navy:#0B1F4D;
       --navy-dark:#081735;
-      --magenta:#E6007E;
-      --blue:#3C8DCC;
-      --orange:#F5A623;
-      --light-blue:#EAF2FA;
+      --magenta:#E6007E;      /* Engage */
+      --blue:#3C8DCC;         /* Motivate */
+      --orange:#F5A623;       /* Perform */
+      --light-blue:#EAF2FA;   /* Card bg */
       --white:#ffffff;
+
+      --text: var(--navy);
       --muted:#5F6B8A;
+      --danger:#ff4d6d;
     }
+
     *{ box-sizing:border-box; }
 
     body{
@@ -33,14 +33,26 @@
       justify-content:center;
       padding:24px;
     }
+
     .hidden{ display:none !important; }
 
+    /* ---------- Intro Screen ---------- */
     .screen{
-      position:fixed; inset:0;
-      display:flex; align-items:center; justify-content:center;
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       background: radial-gradient(1200px 600px at 50% 20%, #1C4C8F 0%, var(--navy) 60%);
-      padding:24px; z-index:1200;
+      padding:24px;
+      z-index: 1200;
     }
+    .introLogo{
+  display:block;
+  margin:0 auto 22px auto;
+  max-width:280px;
+  width:70%;
+}
     .introCard{
       width:min(760px, 100%);
       background: rgba(255,255,255,.12);
@@ -72,135 +84,285 @@
       color: rgba(255,255,255,.92);
       line-height:1.25;
     }
+    .introActions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    /* ---------- Main Layout ---------- */
+    .app{
+      width:min(1100px, 100%);
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      justify-content: center;
+      gap:24px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr;
+      }
+      .spotwrap{ order: 1; }
+      .panel:first-child{ order: 2; }
+    }
 
     .panel{
-      width:min(980px, 100%);
       background: var(--light-blue);
       border:1px solid rgba(11,31,77,.12);
       border-radius:18px;
       padding:18px;
-      color: var(--navy);
+      color: var(--text);
       box-shadow: 0 10px 26px rgba(0,0,0,.10);
     }
     .h{
       font-weight:950;
+      letter-spacing:.2px;
       margin:0 0 8px 0;
-      font-size:22px;
+      font-size:18px;
       color: var(--navy);
     }
     .sub{
       margin:0 0 14px 0;
       color: var(--muted);
-      font-size:14px;
+      font-size:13px;
       line-height:1.4;
-      font-weight:700;
     }
 
-    .hud{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin:10px 0 12px 0;
-    }
-    .hudItem{
-      flex:1 1 160px;
-      background: rgba(255,255,255,.85);
-      border:1px solid rgba(11,31,77,.10);
+    /* Choices */
+    .choices{ display:grid; gap:10px; }
+    .card{
+      background: var(--white);
+      border:1px solid rgba(11,31,77,.12);
       border-radius:14px;
-      padding:10px 12px;
+      padding:12px;
+      cursor: grab;
+      user-select:none;
+      touch-action: manipulation;
       display:flex;
-      align-items:center;
-      justify-content:space-between;
       gap:10px;
-    }
-    .hudLabel{
-      font-size:11px;
-      font-weight:950;
-      letter-spacing:.6px;
-      text-transform:uppercase;
-      color: rgba(11,31,77,.65);
-    }
-    .hudValue{
-      font-size:14px;
-      font-weight:950;
+      align-items:center;
+      transition: transform .08s ease, border-color .15s ease, box-shadow .15s ease;
       color: var(--navy);
+    }
+    .card:active{ cursor: grabbing; }
+   .card.selected{
+  border-color: rgba(245,166,35,.85);   /* Gratia orange */
+  box-shadow: 0 10px 22px rgba(245,166,35,.18);
+  background: rgba(245,166,35,.08);
+}
+
+.card.selected .label{
+  color: var(--navy);
+}
+
+.card.selected::after{
+  content:"Selected";
+  margin-left:auto;
+  font-size:12px;
+  font-weight:950;
+  color: var(--navy);
+  padding:4px 10px;
+  border-radius:999px;
+  background: rgba(245,166,35,.18);
+  border:1px solid rgba(245,166,35,.45);
+}
+    .pill{
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      background: rgba(60,141,204,.14);
+      border:1px solid rgba(60,141,204,.35);
+      color: var(--navy);
+      font-weight:900;
       white-space:nowrap;
     }
+    .label{ font-weight:900; }
+    .desc{ color:var(--muted); font-size:12px; margin-top:2px; }
 
-    .stage{
-      position:relative;
-      width:100%;
-      height:440px;
-      border-radius:18px;
-      overflow:hidden;
-      border:1px solid rgba(11,31,77,.12);
-      background: radial-gradient(900px 420px at 50% 20%, rgba(60,141,204,.20) 0%, rgba(11,31,77,.06) 55%, rgba(11,31,77,.02) 100%);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
-      touch-action: manipulation; /* tap-friendly */
-    }
-    @media (max-width: 620px){
-      .stage{ height:400px; }
-    }
-    @media (max-width: 480px){
-  .powerupStage{ height:320px; }
+    /* ---------- Bubble Stage (mobile-first, no sideways scroll) ---------- */
+.bubbleStage{
+  width: 100%;
+  max-width: 100%;
+  height: 520px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(11,31,77,.14);
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
 }
-    #c{
-      width:100%;
-      height:100%;
-      display:block;
+
+@media (max-width: 620px){
+  .bubbleStage{
+    height: 56vh;
+    min-height: 420px;
+  }
+}
+
+/* Bubbles */
+.bubble{
+  position: absolute;
+  left: 0; top: 0;
+  width: clamp(120px, 34vw, 180px);
+  height: clamp(120px, 34vw, 180px);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 14px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    radial-gradient(circle at 30% 25%,
+      rgba(255,255,255,.95) 0%,
+      rgba(255,255,255,.55) 28%,
+      rgba(60,141,204,.20) 55%,
+      rgba(11,31,77,.10) 100%);
+  border: 2px solid rgba(11,31,77,.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  transform: translate3d(0,0,0);
+}
+
+.bubble .bTitle{
+  font-weight: 950;
+  color: var(--navy);
+  font-size: 14px;
+  line-height: 1.15;
+}
+.bubble .bSub{
+  margin-top: 6px;
+  font-weight: 850;
+  font-size: 11px;
+  color: rgba(11,31,77,.70);
+  line-height: 1.25;
+}
+
+.bubble.popping{
+  animation: pop .22s ease forwards;
+}
+@keyframes pop{
+  0%   { transform: scale(1); opacity: 1; }
+  60%  { transform: scale(1.15); opacity: .95; }
+  100% { transform: scale(.2); opacity: 0; }
+}
+
+.bubble.blocked{
+  animation: nudge .18s ease;
+}
+@keyframes nudge{
+  0% { transform: translate3d(0,0,0) scale(1); }
+  40%{ transform: translate3d(6px,0,0) scale(1.02); }
+  100%{ transform: translate3d(0,0,0) scale(1); }
+}
+
+     /* Spotlight */
+    .spotwrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
     }
 
-    .overlay{
-      position:absolute; inset:0;
+    .spot{
+    width:340px;
+    aspect-ratio:1/1;
+    border-radius:999px;
+    position:relative;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.22);
+    background:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,var(--b, .12)) 0%,
+      rgba(60,141,204,var(--g, .12)) 35%,
+      var(--navy-dark) 72%);
+    box-shadow:
+      0 0 calc(18px + var(--glow, 0px)) rgba(230,0,126,.45),
+      0 0 calc(24px + var(--glow, 0px)) rgba(255,255,255,.10);
+    transition: box-shadow .25s ease,
+              background .25s ease,
+              border-color .25s ease,
+              transform .25s ease;
+    }
+
+    /* Pop effect when 3 selected */
+    .lockedIn{
+    transform: scale(1.06);
+    }
+.spot.dragover{
+      border-color: rgba(245,166,35,.75);
+      box-shadow: 0 0 34px rgba(245,166,35,.55);
+    }
+    .spotInner{
+      width: 78%;
+      height: 78%;
+      border-radius:999px;
+      border:1px dashed rgba(255,255,255,.32);
       display:flex;
-      align-items:center; justify-content:center;
-      padding:18px; text-align:center;
-      font-weight:950;
-      color: var(--navy);
-      background: rgba(234,242,250,.80);
-      backdrop-filter: blur(3px);
-      border-radius:18px;
-      opacity:0; pointer-events:none;
-      transition: opacity .18s ease;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:14px;
+      text-align:center;
+      background: rgba(8,23,53,.16);
     }
-    .overlay.show{ opacity:1; }
-
+    .count{
+      font-weight:950;
+      font-size:14px;
+      color: rgba(255,255,255,.95);
+    }
+    .hint{
+      font-size:12px;
+      color: rgba(255,255,255,.78);
+      line-height:1.4;
+    }
     .picked{
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
-      min-height:42px;
+      gap:8px;
+      justify-content:center;
+      margin-top:6px;
     }
     .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
+      font-size:12px;
+      padding:6px 10px;
       border-radius:999px;
-      background: rgba(230,0,126,.10);
-      border:2px solid var(--magenta);
-      color: var(--navy);
-      font-weight:950;
-      font-size:13px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.22);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      color: rgba(255,255,255,.95);
+      font-weight:800;
     }
-    .tag small{
-      font-weight:900;
-      color: rgba(11,31,77,.60);
+    .x{
+      border:none;
+      background: transparent;
+      color: rgba(255,255,255,.85);
+      cursor:pointer;
+      font-size:14px;
+      line-height:1;
+    }
+    .x:hover{ color:white; }
+
+    .msg{
+      min-height:18px;
+      color: #ffe1ec;
+      font-size:12px;
+      font-weight:800;
     }
 
-    .btnrow{
-      display:flex;
-      gap:12px;
-      width:100%;
-      max-width:520px;
-      margin-top:10px;
-    }
+    .btnrow{ display:flex; gap:10px; width:340px; }
+
     button{
       flex:1;
       border:none;
       border-radius:12px;
-      padding:12px 14px;
+      padding:10px 12px;
       font-weight:950;
       cursor:pointer;
       background: var(--magenta);
@@ -210,550 +372,1465 @@
     }
     button.secondary{
       background: var(--blue);
+      border:1px solid rgba(255,255,255,.18);
       box-shadow: 0 10px 24px rgba(60,141,204,.16);
     }
-    button:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-      box-shadow:none;
+
+    /* 🔥 Conference scoreboard button */
+.conferenceBtn{
+  width:100%;
+  background: var(--orange);
+  border:none;
+  color:white;
+  font-weight:950;
+  box-shadow: 0 10px 26px rgba(245,166,35,.35);
+  animation: subtlePulse 4s ease-in-out infinite; 
+}
+
+.conferenceBtn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(245,166,35,.45);
+}
+    button:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+
+    @keyframes subtlePulse{
+  0%   { box-shadow: 0 10px 26px rgba(245,166,35,.35); }
+  50%  { box-shadow: 0 14px 34px rgba(245,166,35,.55); }
+  100% { box-shadow: 0 10px 26px rgba(245,166,35,.35); }
+}
+
+    /* Replace pulse */
+    .spot.pulse { animation: pulse .22s ease; }
+    @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
+
+    /* ---------- Overlays ---------- */
+      .overlay{
+        position:fixed;
+        inset:0;
+        background: rgba(8,23,53,.80);
+        display:flex;
+        align-items:flex-start;              /* changed */
+        justify-content:center;
+        z-index:999;
+        padding:16px 14px;                  /* changed */
+        overflow-y:auto;                    /* added */
+        -webkit-overflow-scrolling:touch;   /* added */
+    }
+      .modal{
+        width:min(720px, 100%);
+        background: var(--light-blue);
+        border:1px solid rgba(11,31,77,.12);
+        border-radius:18px;
+        padding:22px;
+        text-align:left;
+        box-shadow: 0 18px 60px rgba(0,0,0,.45);
+        color: var(--navy);
+
+        margin:12px auto;                   /* added */
+        max-height: calc(100vh - 32px);     /* added */
+        overflow-y:auto;                    /* added */
+        -webkit-overflow-scrolling:touch;   /* added */
+    }
+    /* Story moment */
+.storyModal{
+  width:min(720px, 100%);
+}
+
+.storyCard{
+  margin-top:14px;
+  padding:16px;
+  border-radius:16px;
+  background: rgba(255,255,255,.92);
+  border:1px solid rgba(11,31,77,.10);
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+}
+
+.storyKicker{
+  font-size:14px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-weight:950;
+  color: var(--magenta);
+  margin-bottom:12px;
+}
+
+.storyText{
+  color: var(--navy);
+  font-weight:850;
+  font-size:15px;
+  line-height:1.55;
+  white-space:pre-line; /* keeps line breaks */
+}
+
+.storySkipRow{
+  margin-top:12px;
+  text-align:center;
+}
+
+.storySkipBtn{
+  background: transparent;
+  border: none;
+  color: rgba(11,31,77,.55);
+  font-weight:900;
+  cursor:pointer;
+  padding:8px 10px;
+  border-radius:10px;
+}
+
+.storySkipBtn:hover{
+  color: var(--navy);
+  background: rgba(11,31,77,.06);
+}
+    .modalTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .title{
+      margin:0;
+      font-size:20px;
+      font-weight:950;
+      margin-top:28px;   /* add this */
+      margin-bottom:14px;
+      letter-spacing:.2px;
+      color: var(--navy);
+    }
+     
+    .sectionTitle{
+      font-size:28px;        /* match .title */
+      font-weight:950;
+      margin-top:24px;
+      margin-bottom:14px;
+      color: var(--navy);
+    }
+    .subtext{
+      margin:6px 0 0 0;
+      color: var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .closeBtn{
+      width:auto;
+      flex:0 0 auto;
+      padding:8px 10px;
+      border-radius:12px;
+      background: rgba(255,255,255,.70);
+      border:1px solid rgba(11,31,77,.12);
+      font-weight:950;
+      cursor:pointer;
+      color: var(--navy);
     }
 
-    .msg{
-      min-height:18px;
-      margin-top:10px;
-      color: rgba(11,31,77,.75);
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(230,0,126,.10);
+      border:2px solid var(--magenta);
+      font-size:12px;
+      font-weight:950;
+      color: var(--navy);
+    }
+
+    .box{
+      margin-top:16px;
+      padding:14px;
+      border-radius:14px;
+      background: rgba(255,255,255,.85);
+      border:1px solid rgba(11,31,77,.10);
+    }
+    .boxtitle{
+      margin:0 0 6px 0;
+      font-size:14px;
+      font-weight:950;
+    }
+    .boxtext{
+      margin:0;
+      color: var(--muted);
       font-size:13px;
+      line-height:1.45;
+    }
+
+    .actions{
+      margin-top:18px;
+      display:flex;
+      gap:10px;
+    }
+    .actions button{ flex:1; }
+
+    .actionsStacked{
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .primaryCta{
+      width:100%;
+      font-size:16px;
+      padding:14px;
+      background: var(--orange);
+      border:none;
+      color:white;
+      box-shadow: 0 8px 22px rgba(245,166,35,.35);
+    }
+
+.primaryCta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(245,166,35,.45);
+}
+
+    .subtleBack{
+      width:100%;
+      background: transparent;
+      color: var(--navy);
+      box-shadow: none;
+      border:1px solid rgba(11,31,77,.15);
+    }
+
+    .btn.primary{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(90deg,#E6007E,#C6006A);
+      color:white;
+      border:none;
+      border-radius:999px;
+      padding:14px 18px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      box-shadow:0 6px 16px rgba(230,0,126,.35);
+    }
+
+    .btn.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 22px rgba(230,0,126,.45);
+    }
+    
+    .note{
+      margin-top:10px;
+      color: rgba(11,31,77,.65);
+      font-size:12px;
+      line-height:1.4;
+      font-weight:800;
+    }
+
+    .impactTagline{
+      margin-top:18px;
+      text-align:center;
+      font-size:14px;
+      font-weight:950;
+      color: var(--navy);
+    }
+
+    /* Games grid */
+    .gameGrid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+    @media (max-width: 620px){
+      .gameGrid{ grid-template-columns: 1fr; }
+    }
+    .gameCard{
+      border-radius:16px;
+      padding:14px;
+      background: var(--white);
+      border:1px solid rgba(11,31,77,.10);
+      border-left:6px solid var(--magenta);
+      box-shadow: 0 6px 18px rgba(0,0,0,.08);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .gameName{
+      font-weight:950;
+      font-size:14px;
+      letter-spacing:.1px;
+      color: var(--navy);
+    }
+    .gameWhy{
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.35;
+      font-weight:800;
+    }
+    .miniTagRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+    }
+    .miniTag{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      background: rgba(60,141,204,.10);
+      border:1px solid rgba(60,141,204,.28);
+      color: var(--navy);
       font-weight:900;
     }
+
+    .btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+
+    /* Lead capture form */
+    form{ margin-top:14px; }
+    .formGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 620px){
+      .formGrid{ grid-template-columns: 1fr; }
+    }
+    .field label{
+      display:block;
+      font-size:12px;
+      color: rgba(11,31,77,.75);
+      margin:0 0 6px 0;
+      font-weight:950;
+    }
+    .field input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(11,31,77,.18);
+      background: rgba(255,255,255,.92);
+      color: var(--navy);
+      outline:none;
+      font-weight:750;
+    }
+    .field input:focus{
+      border-color: rgba(230,0,126,.65);
+      box-shadow: 0 0 0 3px rgba(230,0,126,.14);
+    }
+    .error{
+      margin-top:10px;
+      color:#b0003a;
+      font-size:12px;
+      min-height:16px;
+      font-weight:900;
+    }
+    .success{
+      margin-top:10px;
+      color:#137333;
+      font-size:12px;
+      min-height:16px;
+      font-weight:900;
+    }
+    #confettiCanvas{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+  }
+    .scoreRow{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin:12px 0;
+}
+
+.scoreTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:900;
+  color: var(--navy);
+  font-size:13px;
+}
+
+.scoreBarWrap{
+  width:100%;
+  height:12px;
+  border-radius:999px;
+  background: rgba(11,31,77,.10);
+  overflow:hidden;
+  border:1px solid rgba(11,31,77,.10);
+}
+
+.scoreBar{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background: linear-gradient(90deg, var(--orange), var(--magenta));
+  transition: width .6s ease;
+}
+.shareRow{
+  margin-top:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+
+.qrImage{
+  width:120px;
+  height:120px;
+  border-radius:14px;
+  border:2px solid rgba(11,31,77,.18);
+  background:#fff;
+  padding:10px;
+}
+
+.shareButtons{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+}
+
+.shareBtn{
+  min-width:140px;
+  padding:12px 16px;
+  border-radius:12px;
+  font-weight:900;
+}
+    
   </style>
 </head>
 
 <body>
-
-  <!-- Intro -->
-  <div id="intro" class="screen" role="dialog" aria-modal="true" aria-label="Intro">
+  
+ <!-- ✅ Confetti canvas should be FIRST in body -->
+  <canvas id="confettiCanvas"></canvas>
+  
+  <!-- Intro Screen -->
+  <div id="introScreen" class="screen" role="dialog" aria-modal="true" aria-label="Intro">
     <div class="introCard">
-      <div class="introSubtitle">Gratia Health presents</div>
-      <h1 class="introTitle">Priority Power-Up</h1>
-      <div class="introTagline">Tap bubbles to pop your top 3 workforce priorities.</div>
-      <div style="margin-top:12px;">
-        <button id="startBtn" type="button">Start</button>
+
+  <img src="./logo.svg"
+     alt="Gratia Health"
+     class="introLogo" />
+
+  <div class="introSubtitle">Gratia Health presents</div>
+  <h1 class="introTitle">Game On: Workforce Impact Challenge</h1>
+      <div class="introTagline">Healthcare Leaders: What’s Driving Performance in Your System?</div>
+
+      <div class="introActions">
+        <button id="startBtn" type="button">Start the Game</button>
       </div>
     </div>
   </div>
 
-  <!-- Game -->
-  <div id="app" class="hidden">
-    <div class="panel">
-      <h3 class="h">Priority Power-Up</h3>
-      <p class="sub">
-        Tap a bubble to <b>pop</b> it. Pick <b>3</b>. If you pop a 4th, it replaces your <b>most recent</b> pick.
-      </p>
+  <!-- Game Container -->
+  <div id="gameContainer" class="hidden">
+    <div class="app">
+      <div class="panel">
+        <h3 class="h">Pick your priorities</h3>
+        <p class="sub">Select up to <b>3</b> priorities into the Spotlight. The spotlight gets brighter as you lock in what matters most.</p>
+        <div id="bubbleStage" class="bubbleStage" aria-label="Pop priorities bubbles"></div>
+      </div>
 
-      <div class="hud">
-        <div class="hudItem">
-          <div class="hudLabel">Time</div>
-          <div class="hudValue" id="timeLeft">25</div>
+      <div class="spotwrap">
+        <div class="spot" id="spot" aria-label="Spotlight Circle drop zone">
+          <div class="spotInner">
+            <div class="count" id="count">Choose the 3 priorities to spotlight.</div>
+            <div class="picked" id="picked"></div>
+          </div>
         </div>
-        <div class="hudItem">
-          <div class="hudLabel">Powered up</div>
-          <div class="hudValue"><span id="poweredCount">0</span>/3</div>
-        </div>
-        <div class="hudItem">
-          <div class="hudLabel">How to play</div>
-          <div class="hudValue">Tap bubbles</div>
+        <div class="msg" id="msg"></div>
+        <div class="btnrow">
+          <button class="secondary" id="resetBtn">Reset</button>
+          <button id="continueBtn" disabled>Continue</button>
         </div>
       </div>
 
-      <div class="stage" id="stage">
-        <canvas id="c"></canvas>
-        <div class="overlay show" id="overlay">Ready? Pop <b>3</b> priorities.</div>
+    </div>
+
+    <!-- Results Overlay -->
+    <div id="resultsOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Results">
+      <div class="modal">
+        <div class="modalTop">
+          <div>
+            <h2 class="title">Your Spotlight</h2>
+            <p class="subtext">Here’s what you chose — and what we recommend next.</p>
+          </div>
+          <button class="closeBtn" id="closeResultsBtn" aria-label="Close results">✕</button>
+        </div>
+
+        <div class="chips" id="resultsChips"></div>
+
+        <div class="box">
+          <div class="boxtitle" id="recTitle">Recommended focus</div>
+          <p class="boxtext" id="recText"></p>
+        </div>
+
+        <div class="title">
+          Gratia games aligned to your priorities
+        </div>
+
+        <div class="gameGrid" id="gameGrid"></div>
+
+        <div class="actions actionsStacked">
+
+        <button id="toLeadBtn" class="primaryCta">
+          Bring this to life in your hospital
+        </button>
+
+        <button class="secondary subtleBack" id="backBtn">
+          Adjust priorities
+        </button>
+
+    </div>
+        <div class="impactTagline">Make your staff’s impact visible — and strengthen patient care.</div>
       </div>
+    </div>
 
-      <div class="picked" id="pickedWrap"></div>
+    <!-- Story Overlay -->
+      <div id="storyOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Story moment">
+        <div class="modal storyModal">
+        <div class="modalTop">
+          <div>
+            <h2 class="title" style="margin-top:0;">A moment on the floor</h2>
+            <p class="subtext">This is what “visibility” looks like in real life.</p>
+          </div>
+          <button class="closeBtn" id="closeStoryBtn" aria-label="Close story">✕</button>
+        </div>
 
-      <div class="btnrow">
-        <button class="secondary" id="resetBtn" type="button">Reset</button>
-        <button id="continueBtn" type="button" disabled>Continue</button>
+        <div class="storyCard">
+          <div class="storyKicker" id="storyKicker">Your shift, in the spotlight</div>
+          <div class="storyText" id="storyText"></div>
+        </div>
+
+        <div class="actions actionsStacked">
+          <button id="storyContinueBtn" class="primaryCta">Continue to your Spotlight</button>
+          <button class="secondary subtleBack" id="storyBackBtn">Adjust priorities</button>
+        </div>
+
       </div>
-
-      <div class="msg" id="msg"></div>
     </div>
   </div>
+    
+    <!-- Games Overlay -->
+    <div id="gamesOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Aligned games">
+      <div class="modal">
+        <div class="modalTop">
+          <div>
+            <h2 class="title">Games aligned to your picks</h2>
+            <p class="subtext">One game per area you chose (short why).</p>
+          </div>
+          <button class="closeBtn" id="closeGamesBtn" aria-label="Close games">✕</button>
+        </div>
+
+        <div class="chips" id="gamesChips"></div>
+        <div class="gameGrid" id="gamesGameGrid"></div>
+
+        <div class="actions">
+          <button id="gamesToLeadBtn">Get a quick demo</button>
+          <button class="secondary" id="gamesBackBtn">Back</button>
+        </div>
+
+        <div class="note">Explainers are capped at ~5–6 words.</div>
+      </div>
+    </div>
+
+    <!-- Lead Capture Overlay -->
+    <div id="leadOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Lead capture">
+      <div class="modal">
+        <div class="modalTop">
+          <div>
+            <h2 class="title">See this in your hospital</h2>
+            <p class="subtext">We’ll show you how to make your staff’s impact visible — fast.</p>
+          </div>
+          <button class="closeBtn" id="closeLeadBtn" aria-label="Close lead capture">✕</button>
+        </div>
+
+      <div id="leadFormState">
+        <form id="leadForm">
+          <div class="formGrid">
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input id="firstName" name="firstName" autocomplete="given-name" required />
+            </div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input id="lastName" name="lastName" autocomplete="family-name" required />
+            </div>
+            <div class="field">
+              <label for="organization">Organization</label>
+              <input id="organization" name="organization" autocomplete="organization" required />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+            </div>
+            <div class="field">
+              <label for="role">Role (optional)</label>
+              <input id="role" name="role" autocomplete="organization-title" />
+            </div>
+          </div>
+
+          <div class="error" id="leadError"></div>
+          <div class="success" id="leadSuccess"></div>
+
+          <div class="actions">
+            <button type="submit">Let's explore further</button>
+          </div>
+
+        </form>
+      </div>
+        <div id="thankYouState" class="hidden">
+
+  <div class="title" style="margin-top:18px; margin-bottom:6px;">You’re all set.</div>
+  <p class="subtext" style="margin-top:0; margin-bottom:14px;">
+    Next step: book time and invite a colleague to explore visibility in action.
+  </p>
+
+  <div class="actions">
+    <a id="bookCallLink"
+       href="https://calendly.com/tim-lafrankie-gratiahealth/gratia-alignment-session"
+       target="_blank"
+       rel="noopener"
+       class="btn primary"
+       style="width:100%;">
+      Book a strategy call
+    </a>
+  </div>
+
+ <div class="actions" style="margin-top:12px;">
+  <button type="button" class="conferenceBtn" id="openScoreBtn">
+    See live conference results
+  </button>
+</div>
+
+<div style="margin-top:22px; font-weight:950; color: var(--navy); text-align:center;">
+  Invite a colleague to explore visibility in action
+</div>
+
+<div class="shareRow">
+  <img id="shareQr"
+       alt="QR code"
+       class="qrImage" />
+
+  <div class="shareButtons">
+    <button type="button" class="secondary shareBtn" id="copyLinkBtn">
+      Copy link
+    </button>
+
+    <button type="button" class="secondary shareBtn" id="startOverBtn">
+      Start over
+    </button>
+  </div>
+</div>
+
+  <!-- Live Scoreboard Overlay -->
+<div id="scoreOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Live conference results">
+  <div class="modal">
+    <div class="modalTop">
+      <div>
+        <h2 class="title" style="margin-top:0;">Live conference results</h2>
+        <p class="subtext" id="scoreMeta">Loading…</p>
+      </div>
+      <button class="closeBtn" id="closeScoreBtn" aria-label="Close">✕</button>
+    </div>
+
+    <div id="scoreList" style="margin-top:14px;"></div>
+
+    <div class="actions actionsStacked" style="margin-top:18px;">
+      <a
+        id="scoreBookCall"
+        href="https://calendly.com/tim-lafrankie-gratiahealth/gratia-alignment-session"
+        target="_blank"
+        rel="noopener"
+        class="btn primary"
+        style="width:100%;"
+      >
+        Book a strategy call
+      </a>
+      <button class="secondary subtleBack" id="refreshScoreBtn" type="button">Refresh</button>
+    </div>
+  </div>
+</div>
 
 <script>
-/* =========================
-   CONFIG
-========================= */
-const MAX = 3;
-const TIMER_SEC = 25;
-
-// 6 priorities only
-const PRIORITIES = [
-  { id:"px",        label:"Patient Experience", emoji:"❤️" },
-  { id:"quality",   label:"Quality & Safety",   emoji:"🛡️" },
-  { id:"retention", label:"Retention",          emoji:"🧲" },
-  { id:"onboarding",label:"Onboarding",         emoji:"🧭" },
-  { id:"culture",   label:"Team Culture",       emoji:"🤝" },
-  { id:"staffing",  label:"Staffing Stability", emoji:"📅" },
-];
-
-  let bag = [];
-
-function refillBag(){
-  bag = PRIORITIES.map(p=>p.id);
-  for(let i=bag.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [bag[i], bag[j]] = [bag[j], bag[i]];
-  }
-}
-function nextIdFromBag(){
-  if(!bag.length) refillBag();
-  return bag.pop();
-}
-
-function pickColor(id){
-  const map = {
-    retention: "rgba(230,0,126,.18)",
-    px:        "rgba(60,141,204,.18)",
-    quality:   "rgba(245,166,35,.18)",
-    staffing:  "rgba(11,31,77,.12)",
-    culture:   "rgba(230,0,126,.12)",
-    onboarding:"rgba(60,141,204,.12)",
-  };
-  return map[id] || "rgba(11,31,77,.12)";
-}
-
-function labelFor(id){
-  return (PRIORITIES.find(p=>p.id===id) || {}).label || id;
-}
-
-/* =========================
-   DOM
-========================= */
-const intro = document.getElementById("intro");
+// Intro screen controls
+const introScreen = document.getElementById("introScreen");
 const startBtn = document.getElementById("startBtn");
-const app = document.getElementById("app");
+const gameContainer = document.getElementById("gameContainer");
+const leadFormState = document.getElementById("leadFormState");
+const thankYouState = document.getElementById("thankYouState");
+const shareQr = document.getElementById("shareQr");
+const copyLinkBtn = document.getElementById("copyLinkBtn");
+const startOverBtn = document.getElementById("startOverBtn");
 
-const stage = document.getElementById("stage");
-const canvas = document.getElementById("c");
-const overlay = document.getElementById("overlay");
 
-const timeLeftEl = document.getElementById("timeLeft");
-const poweredCountEl = document.getElementById("poweredCount");
-const pickedWrap = document.getElementById("pickedWrap");
-const msgEl = document.getElementById("msg");
-const resetBtn = document.getElementById("resetBtn");
-const continueBtn = document.getElementById("continueBtn");
+// ---- START BUTTON (single source of truth) ----
+function startGame(e){
+  if (e) { try{ e.preventDefault(); }catch(_){} }
+  if (introScreen) introScreen.classList.add("hidden");
+  if (gameContainer) gameContainer.classList.remove("hidden");
+  window.scrollTo(0,0);
 
-/* =========================
-   STATE
-========================= */
-let ctx = null;
-let DPR = 1;
-
-let picked = [];   // keep max 3 (but replacement rule differs)
-let bubbles = [];
-let pops = [];     // explosion particles
-let running = false;
-
-let startAt = 0;
-let lastAt = 0;
-let raf = 0;
-
-let nextSpawnAt = 0;
-const SPAWN_EVERY_MS = 450;     // slower + spaced out
-const MAX_ON_SCREEN = 6;        // keeps it manageable
-
-/* =========================
-   CANVAS
-========================= */
-function fitCanvas(){
-  const rect = stage.getBoundingClientRect();
-  DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  canvas.width  = Math.floor(rect.width * DPR);
-  canvas.height = Math.floor(rect.height * DPR);
-  canvas.style.width = rect.width + "px";
-  canvas.style.height = rect.height + "px";
-  ctx = canvas.getContext("2d");
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-}
-function rand(a,b){ return a + Math.random()*(b-a); }
-
-  function isSelected(id){
-  return picked.includes(id);
+  // 🔥 Start bubble game after layout is visible
+  setTimeout(() => {
+    createBubbles();
+  }, 50);
 }
 
-function resetBubbleToTop(b, W){
-  // keep it spread out horizontally
-  b.x = rand(40, W - 40);
-  b.y = -rand(30, 180);
+window.startGame = startGame;
+
+if (startBtn){
+  startBtn.type = "button";
+  startBtn.addEventListener("click", startGame, { passive:false });
+  startBtn.addEventListener("touchend", startGame, { passive:false });
 }
-/* =========================
-   PICK LOGIC (your rule)
-   - pick 1..3 fill
-   - if pick 4th replaces LAST pick (slot 3)
-========================= */
+
+  const MAX = 3;
+  const behavior = "replaceOldest"; // "block" or "replaceOldest"
+
+  // Your selectable areas
+  const data = [
+    { id:"px", label:"Patient Experience", desc:"Make everyday moments visible that impact HCAHPS." },
+    { id:"quality", label:"Quality & Safety", desc:"Drive consistent behaviors that improve outcomes." },
+    { id:"retention", label:"Retention", desc:"Keep great nurses and reduce churn." },
+    { id:"onboarding", label:"Onboarding", desc:"Get new hires productive faster." },
+    { id:"culture", label:"Team Culture", desc:"Boost teamwork, recognition, and belonging." },
+    { id:"staffing", label:"Staffing Stability", desc:"Cut contract labor reliance and keep units staffed." },
+  ];
+
+  // One aligned game per area
+  const gameMap = {
+    staffing:   { name: "Shift Pick-Up",        why: "Fill gaps fast, reduce agency.", tags:["Coverage","Speed"] },
+    retention:  { name: "Living Legends",       why: "Recognize top performers, keep them.", tags:["Recognition","Retention"] },
+    quality:    { name: "Care IQ",              why: "Reinforce daily quality behaviors.", tags:["Quality","Behaviors"] },
+    px:         { name: "Compliment Circle",    why: "Boost kindness patients notice.", tags:["PX","Culture"] },
+    culture:    { name: "Compliment Circle",    why: "Create everyday positive visibility.", tags:["Teamwork","Belonging"] },
+    onboarding: { name: "New Hire Navigator",   why: "Accelerate ramp, reduce early churn.", tags:["Onboarding","Ramp"] },
+  };
+
+  // Short “moment on the floor” stories (one per priority)
+const storyMap = {
+  px: {
+    kicker: "PATIENT EXPERIENCE",
+    text:
+`2:17 p.m.
+A family is anxious at the bedside.
+A nurse pauses, explains, and stays present.
+
+Result:
+An ordinary interaction becomes a moment of trust.
+
+That’s visibility.`
+  },
+  quality: {
+    kicker: "QUALITY & SAFETY",
+    text:
+`6:42 a.m.
+A near-miss is caught before it becomes an event.
+A small check prevents a big consequence.
+
+Result:
+Safe habits become standard practice.
+
+That’s visibility.`
+  },
+  retention: {
+    kicker: "RETENTION",
+    text:
+`End of a long week.
+Your strongest nurse holds the unit steady — again.
+No one asked. They just stepped in.
+
+Result:
+Commitment gets recognized before burnout sets in.
+
+That’s visibility.`
+  },
+  onboarding: {
+    kicker: "ONBOARDING",
+    text:
+`First week on the floor.
+A new hire hesitates before a decision.
+A teammate coaches — and someone notices the growth.
+
+Result:
+Confidence builds faster than doubt.
+
+That’s visibility.`
+  },
+  culture: {
+    kicker: "TEAM CULTURE",
+    text:
+`Shift change.
+One nurse jumps in to help without being asked.
+A quiet assist keeps the team moving.
+
+Result:
+Support becomes the norm, not the exception.
+
+That’s visibility.`
+  },
+  staffing: {
+    kicker: "STAFFING STABILITY",
+    text:
+`4:55 p.m.
+A gap opens for night shift.
+Someone picks it up — because reliability gets seen and rewarded.
+
+Result:
+Coverage stops being last-minute chaos.
+
+That’s visibility.`
+  }
+};
+
+  const choicesEl = document.getElementById("choices");
+  const spotEl = document.getElementById("spot");
+  let bubbles = [];
+let bubbleRAF = null;
+let bubbleRunning = false;
+
+const spotEl = document.getElementById("spot");
+const pickedEl = document.getElementById("picked");
+  const pickedEl = document.getElementById("picked");
+  const countEl = document.getElementById("count");
+  const msgEl = document.getElementById("msg");
+  const resetBtn = document.getElementById("resetBtn");
+  const continueBtn = document.getElementById("continueBtn");
+
+  // Results overlay
+  const resultsOverlay = document.getElementById("resultsOverlay");
+  const resultsChips = document.getElementById("resultsChips");
+  const recTitleEl = document.getElementById("recTitle");
+  const recTextEl = document.getElementById("recText");
+  const closeResultsBtn = document.getElementById("closeResultsBtn");
+  const backBtn = document.getElementById("backBtn");
+
+ // 🔥 ADD THIS RIGHT HERE
+// Live Scoreboard Overlay
+const scoreOverlay = document.getElementById("scoreOverlay");
+const scoreMeta = document.getElementById("scoreMeta");
+const scoreList = document.getElementById("scoreList");
+const closeScoreBtn = document.getElementById("closeScoreBtn");
+const refreshScoreBtn = document.getElementById("refreshScoreBtn"); 
+const openScoreBtn = document.getElementById("openScoreBtn");
+
+  // Conference Mode Endpoint (GLOBAL — only once)
+const CONFERENCE_ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbxQfYi_Xp3PXd8Jw34YrHAhPVTunJf091kvs-F916MwRUhaLOrYLrKCvVcd5uuncUAP/exec";
+  
+  // Games overlay (used in a few handlers)
+  const gamesOverlay = document.getElementById("gamesOverlay");
+
+
+  // Story overlay  ← ADD RIGHT HERE
+  const storyOverlay = document.getElementById("storyOverlay");
+  const storyKickerEl = document.getElementById("storyKicker");
+  const storyTextEl = document.getElementById("storyText");
+  const closeStoryBtn = document.getElementById("closeStoryBtn");
+  const storyContinueBtn = document.getElementById("storyContinueBtn");
+  const storyBackBtn = document.getElementById("storyBackBtn");
+
+  // Games overlay
+  const gameGrid = document.getElementById("gameGrid");
+  const toLeadBtn = document.getElementById("toLeadBtn");
+
+  // Lead overlay
+  const leadOverlay = document.getElementById("leadOverlay");
+  const closeLeadBtn = document.getElementById("closeLeadBtn");
+  const leadForm = document.getElementById("leadForm");
+  const leadError = document.getElementById("leadError");
+  const leadSuccess = document.getElementById("leadSuccess");
+
+  let picked = []; // array of ids
+
+ function renderChoices(){
+  // no longer used — bubble game replaces this
+}
+
+  /* PASTE ALL THESE NEW BUBBLE FUNCTIONS RIGHT HERE */
+function resetBubbles(){ ... }
+function createBubbles(){ ... }
+function startBubbleLoop(){ ... }
+function stopBubbleLoop(){ ... }
+function handleBubblePop(b){ ... }
 function renderPicked(){
-  poweredCountEl.textContent = String(Math.min(picked.length, MAX));
-  pickedWrap.innerHTML = "";
 
-  picked.forEach((id, idx)=>{
-    const tag = document.createElement("div");
-    tag.className = "tag";
-    const meta = (idx === picked.length-1) ? "last" : "";
-    tag.innerHTML = `<span>${labelFor(id)}</span>${meta ? `<small>${meta}</small>` : ""}`;
-    pickedWrap.appendChild(tag);
+  // Clear selected state from all cards
+  document.querySelectorAll(".card").forEach(c=>{
+    c.classList.remove("selected");
   });
 
-  continueBtn.disabled = picked.length < MAX;
+  // Apply selected state to picked cards
+  picked.forEach(id=>{
+    const card = document.querySelector(`.card[data-id="${id}"]`);
+    if (card) card.classList.add("selected");
+  });
+
+  pickedEl.innerHTML = "";
+
+  picked.forEach(id=>{
+    const item = data.find(x=>x.id===id);
+    const tag = document.createElement("div");
+    tag.className = "tag";
+    tag.innerHTML = `
+      <span>${item.label}</span>
+      <button class="x" aria-label="Remove ${item.label}">×</button>
+    `;
+    tag.querySelector("button").addEventListener("click", ()=>removePick(id));
+    pickedEl.appendChild(tag);
+  });
+
+  const n = picked.length;
+
+if (n === 0){
+  countEl.textContent = "Choose up to 3 priorities to spotlight.";
 }
-
-let completeTimer = null;
-function showCompleteOverlay(){
-  const lines = picked.slice(0,MAX).map(id=>`<li>${labelFor(id)}</li>`).join("");
-  overlay.innerHTML = `
-    <div>
-      <div style="font-size:18px; font-weight:950; margin-bottom:8px;">Power-Up Complete</div>
-      <div style="opacity:.85; margin-bottom:10px;">You powered up:</div>
-      <ul style="margin:0; padding-left:18px; text-align:left;">${lines}</ul>
-      <div style="margin-top:12px; font-size:12px; opacity:.8;">Tap <b>Continue</b> to move on.</div>
-    </div>
-  `;
-  overlay.classList.add("show");
-
-  if(completeTimer) clearTimeout(completeTimer);
-  completeTimer = setTimeout(()=> overlay.classList.remove("show"), 1200);
+else if (n === 1){
+  countEl.textContent = "Good start.";
 }
+else if (n === 2){
+  countEl.textContent = "Almost there.";
+}
+else if (n === 3){
+  countEl.textContent = "Spotlight locked in.";
+}
+  continueBtn.disabled = picked.length !== MAX;
 
-function addPick(id){
-  // ignore if already in list (optional: you can allow re-picking to “refresh”)
-  if(picked.includes(id)) return;
+  // Stronger brightness ramp
+  const t = n / MAX;
+  const ease = t * t;
 
-  if(picked.length < MAX){
-    picked.push(id);
-  } else {
-    // Replace LAST (most recent) pick
-    picked[picked.length - 1] = id;
-    msgEl.textContent = "Updated your priorities (replaced the last pick).";
-    setTimeout(()=>{ msgEl.textContent = ""; }, 900);
+  spotEl.style.setProperty("--b", (0.12 + 0.55*ease).toFixed(2));
+  spotEl.style.setProperty("--g", (0.10 + 0.70*ease).toFixed(2));
+  spotEl.style.setProperty("--glow", (18 + 160*ease).toFixed(0) + "px");
+
+  if (n === MAX){
+    spotEl.classList.add("lockedIn");
+    setTimeout(()=>spotEl.classList.remove("lockedIn"), 450);
   }
-
-  renderPicked();
-
-  if(picked.length === MAX){
-    showCompleteOverlay();
-  }
 }
 
-/* =========================
-   BUBBLES
-========================= */
-function makeBubble(){
-  const rect = stage.getBoundingClientRect();
-  const id = nextIdFromBag();
-const p = PRIORITIES.find(x => x.id === id);
+  function addPick(id){
+    msg("");
+    if (picked.includes(id)) return;
 
-  const r = rand(36, 48);   // bigger for iPhone
-  const x = rand(r + 12, rect.width - r - 12);
-  const y = -rand(80, 180);
-
-  // slower fall
-  const vy = rand(55, 80);
-  // gentle drift
-  const vx = rand(-10, 10);
-
-  return {
-    id: p.id,
-    label: p.label,
-    emoji: p.emoji,
-    x, y, r, vx, vy,
-  };
-}
-
-function spawnIfNeeded(now){
-  if(now < nextSpawnAt) return;
-  nextSpawnAt = now + SPAWN_EVERY_MS + rand(-60, 60);
-
-  if(bubbles.length >= MAX_ON_SCREEN) return;
-
-  // try not to spawn duplicates on screen too often
-  const attempts = 4;
-  for(let i=0;i<attempts;i++){
-    const b = makeBubble();
-    const exists = bubbles.some(x=>x.id===b.id);
-    if(!exists || Math.random() < 0.35){
-      bubbles.push(b);
+    if (picked.length < MAX){
+      picked.push(id);
+      renderPicked();
       return;
     }
+
+    if (behavior === "replaceOldest"){
+      picked.shift();
+      picked.push(id);
+      renderPicked();
+
+      msg("Spotlight is full — replaced your oldest pick.");
+      setTimeout(()=>msg(""), 1200);
+
+      // pulse spotlight
+      spotEl.classList.remove("pulse");
+      void spotEl.offsetWidth;
+      spotEl.classList.add("pulse");
+    } else {
+      msg("Max of 3 — remove one to add another.");
+    }
   }
-  bubbles.push(makeBubble());
+
+  function removePick(id){
+    picked = picked.filter(x=>x!==id);
+    msg("");
+    renderPicked();
+  }
+
+  function reset(){
+  picked = [];
+  msg("");
+  renderPicked();
+  createBubbles(); // start bubbles over
 }
 
-/* =========================
-   POP / EXPLOSION
-========================= */
-function popBubble(b){
-  // add pick
-  addPick(b.id);
+  function msg(text){
+    msgEl.textContent = text || "";
+  }
 
-  // explosion particles
-  const count = 18 + Math.floor(Math.random()*8);
-  for(let i=0;i<count;i++){
-    const ang = Math.random()*Math.PI*2;
-    const sp = 70 + Math.random()*160;
-    pops.push({
-      x: b.x,
-      y: b.y,
-      vx: Math.cos(ang)*sp,
-      vy: Math.sin(ang)*sp,
-      r: 2 + Math.random()*4,
+  // Results overlay
+  function showResults(){
+    resultsChips.innerHTML = picked.map(id => {
+      const item = data.find(x=>x.id===id);
+      return `<div class="chip">${item.label}</div>`;
+    }).join("");
+
+    const rec = generateRecommendation(picked);
+    recTitleEl.textContent = rec.title;
+    recTextEl.textContent = rec.text;
+
+    gameGrid.innerHTML = picked.map(id=>{
+    const gm = gameMap[id] || { name:"Gratia Game", why:"Aligned to your selected priority.", tags:[] };
+    const tags = (gm.tags || []).slice(0,3)
+      .map(t=>`<span class="miniTag">${t}</span>`)
+      .join("");
+    return `
+      <div class="gameCard">
+        <div class="gameName">${gm.name}</div>
+        <div class="gameWhy">${gm.why}</div>
+        <div class="miniTagRow">${tags}</div>
+      </div>
+    `;
+  }).join("");
+
+    resultsOverlay.classList.remove("hidden");
+  }
+
+  function closeResults(){ resultsOverlay.classList.add("hidden"); }
+
+// label map (must match your ids)
+const priorityOrder = [
+  { id:"px", label:"Patient Experience" },
+  { id:"quality", label:"Quality & Safety" },
+  { id:"retention", label:"Retention" },
+  { id:"onboarding", label:"Onboarding" },
+  { id:"culture", label:"Team Culture" },
+  { id:"staffing", label:"Staffing Stability" },
+];
+
+// Fetch + render scoreboard
+async function loadScoreboard(){
+  scoreMeta.textContent = "Loading…";
+  scoreList.innerHTML = "";
+
+  try{
+    const url = CONFERENCE_ENDPOINT + "?action=stats&t=" + Date.now();
+    const res = await fetch(url, { method:"GET", cache:"no-store" });
+
+    const raw = await res.text();          // <-- read as text first
+    console.log("[Scoreboard raw]", raw);  // <-- inspect in console
+
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    let json;
+    try{
+      json = JSON.parse(raw);              // <-- parse manually
+    }catch(e){
+      throw new Error("Not JSON (likely login/HTML). Check Apps Script access.");
+    }
+
+    const summary = Array.isArray(json.summary) ? json.summary : [];
+    const total = summary.reduce((sum, row)=> sum + Number(row.count || 0), 0);
+
+    scoreMeta.textContent = total ? `${total} responses today` : "No responses yet";
+
+    scoreList.innerHTML = summary.map(row=>{
+      const c = Number(row.count || 0);
+      const pct = total ? Math.round((c/total)*100) : 0;
+      return `
+        <div class="scoreRow">
+          <div class="scoreTop">
+            <span>${row.label || row.id}</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="scoreBarWrap">
+            <div class="scoreBar" style="width:${pct}%;"></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+  }catch(err){
+    console.error("Scoreboard load failed:", err);
+    scoreMeta.textContent = "Couldn’t load results.";
+    scoreList.innerHTML = `
+      <div class="box">
+        <div class="boxtitle">Troubleshooting</div>
+        <p class="boxtext">
+          ${String(err.message || err)}
+          <br><br>
+          Most common fix: Apps Script Web App must be deployed to <b>Anyone</b> access.
+        </p>
+      </div>
+    `;
+  }
+}
+  // ✅ NOW paste this right here:
+
+if (closeScoreBtn){
+  closeScoreBtn.addEventListener("click", ()=> scoreOverlay.classList.add("hidden"));
+}
+if (refreshScoreBtn){
+  refreshScoreBtn.addEventListener("click", loadScoreboard);
+}
+  
+  function showStory(){
+  const key = picked[picked.length - 1] || picked[0];
+  const s = storyMap[key] || {
+    kicker: "Activate visibility",
+    text:
+`Everyday moments matter.
+When they’re visible, they get reinforced.
+And the culture shifts—fast.`
+  };
+
+  storyKickerEl.textContent = s.kicker;
+  storyTextEl.textContent = s.text;
+
+  storyOverlay.classList.remove("hidden");
+}
+
+function closeStory(){
+  storyOverlay.classList.add("hidden");
+}
+
+  function generateRecommendation(ids){
+    const has = (x)=>ids.includes(x);
+
+    if (has("staffing") && has("retention")){
+      return {
+        title: "Recommended focus: staffing + retention",
+        text: "Pair staffing support with recognition loops so units stabilize quickly and top performers stay visible."
+      };
+    }
+    if (has("quality") && (has("px") || has("culture"))){
+      return {
+        title: "Recommended focus: quality + experience",
+        text: "Tie daily behaviors to visible recognition so leaders reinforce what ‘great’ looks like in real time."
+      };
+    }
+    if (has("onboarding") && has("culture")){
+      return {
+        title: "Recommended focus: faster ramp + belonging",
+        text: "Use onboarding moments to build connection early, then keep momentum with lightweight, shift-friendly recognition."
+      };
+    }
+    if (has("quality")){
+      return {
+        title: "Recommended focus: measurable behaviors",
+        text: "Anchor on a clear set of behaviors and make them visible daily so leaders can reinforce and replicate what works."
+      };
+    }
+    return {
+      title: "Recommended focus: activate visibility",
+      text: "Your priorities benefit from making everyday moments visible and reinforcing the right behaviors consistently."
+    };
+  }
+
+  function closeGames(){ gamesOverlay.classList.add("hidden"); }
+
+  // Lead overlay
+  function showLead(){
+    gamesOverlay.classList.add("hidden");
+    leadOverlay.classList.remove("hidden");
+    leadError.textContent = "";
+    leadSuccess.textContent = "";
+  }
+
+  function closeLead(){ leadOverlay.classList.add("hidden"); }
+
+  function validateLeadForm(fd){
+    const required = ["firstName","lastName","organization","email","phone"];
+    for (const k of required){
+      if (!String(fd.get(k) || "").trim()) return `Please enter your ${k.replace(/([A-Z])/g," $1").toLowerCase()}.`;
+    }
+    const email = String(fd.get("email") || "").trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return "Please enter a valid email address.";
+    return null;
+  }
+
+  // Drop zone (desktop drag)
+  spotEl.addEventListener("dragover", (e)=>{ e.preventDefault(); spotEl.classList.add("dragover"); });
+  spotEl.addEventListener("dragleave", ()=> spotEl.classList.remove("dragover"));
+  spotEl.addEventListener("drop", (e)=>{
+    e.preventDefault();
+    spotEl.classList.remove("dragover");
+    const id = e.dataTransfer.getData("text/plain");
+    if (id) addPick(id);
+  });
+
+  // Buttons
+  if (resetBtn){
+  resetBtn.addEventListener("click", reset);
+}
+  
+  // Continue now opens Story first
+continueBtn.addEventListener("click", showStory);
+
+// Story buttons
+if (closeStoryBtn) closeStoryBtn.addEventListener("click", closeStory);
+
+if (storyContinueBtn) {
+  storyContinueBtn.addEventListener("click", () => {
+    closeStory();
+    showResults();
+
+    // Fire confetti after the DOM/overlays have repainted (Safari-safe)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        burstConfetti();
+      });
+    });
+  });
+}
+
+if (storyBackBtn) {
+  storyBackBtn.addEventListener("click", () => {
+    closeStory();
+  });
+}
+
+  closeResultsBtn.addEventListener("click", closeResults);
+  backBtn.addEventListener("click", closeResults);
+
+  toLeadBtn.addEventListener("click", showLead);
+
+  closeLeadBtn.addEventListener("click", closeLead);
+
+ // Scoreboard open button
+if (openScoreBtn){
+  openScoreBtn.addEventListener("click", ()=>{
+    console.log("Scoreboard button clicked ✅");
+    scoreOverlay.classList.remove("hidden");
+    setTimeout(loadScoreboard, 50);
+  });
+}
+
+  // Click outside modals closes current overlay
+  [resultsOverlay, gamesOverlay, leadOverlay].forEach(ov=>{
+    ov.addEventListener("click", (e)=>{
+      if (e.target === ov){
+        ov.classList.add("hidden");
+      }
+    });
+  });
+
+  // ESC closes topmost overlay
+  window.addEventListener("keydown", (e)=>{
+    if (e.key !== "Escape") return;
+    if (!leadOverlay.classList.contains("hidden")) return closeLead();
+    if (!gamesOverlay.classList.contains("hidden")) return closeGames();
+    if (!resultsOverlay.classList.contains("hidden")) return closeResults();
+  });
+
+  // Lead submit (currently console.log)
+  leadForm.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    leadError.textContent = "";
+    leadSuccess.textContent = "";
+
+    const fd = new FormData(leadForm);
+    const err = validateLeadForm(fd);
+    if (err){
+      leadError.textContent = err;
+      return;
+    }
+
+    const payload = {
+      picks: picked.slice(),
+      picks_labels: picked.map(id => (data.find(x=>x.id===id) || {}).label).filter(Boolean),
+      aligned_games: picked.map(id => (gameMap[id] || {}).name).filter(Boolean),
+      firstName: fd.get("firstName"),
+      lastName: fd.get("lastName"),
+      organization: fd.get("organization"),
+      email: fd.get("email"),
+      phone: fd.get("phone"),
+      role: fd.get("role"),
+      createdAt: new Date().toISOString(),
+    };
+
+    // ---- Conference Mode POST to Google Apps Script ----
+
+payload.sessionId = payload.sessionId || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2));
+payload.device = navigator.userAgent;
+
+fetch(CONFERENCE_ENDPOINT, {
+  method: "POST",
+  headers: { "Content-Type": "text/plain;charset=utf-8" }, // best for Apps Script
+  body: JSON.stringify(payload),
+})
+.then(r => r.json())
+.then(res => {
+  console.log("Conference POST:", res);
+})
+.catch(err => {
+  console.warn("Conference POST failed:", err);
+});
+
+      console.log("Lead payload (send this to HubSpot next):", payload);
+
+      // Get elements
+      const leadFormState = document.getElementById("leadFormState");
+      const thankYouState = document.getElementById("thankYouState");
+      const shareQr = document.getElementById("shareQr");
+
+      // Build share URL
+      const shareUrl = window.location.href.split("#")[0];
+
+      // Generate QR
+      shareQr.src =
+      "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
+      encodeURIComponent(shareUrl);
+
+      // Swap UI
+      leadFormState.classList.add("hidden");
+      thankYouState.classList.remove("hidden");
+
+      // Clear any error/success text
+      leadError.textContent = "";
+      leadSuccess.textContent = "";
+  });
+
+ function burstConfetti(){
+  const canvas = document.getElementById("confettiCanvas");
+  if (!canvas) { console.warn("No confettiCanvas found"); return; }
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) { console.warn("No 2D context"); return; }
+
+  // Force top layer (Safari stacking-context safety)
+  canvas.style.display = "block";
+  canvas.style.position = "fixed";
+  canvas.style.inset = "0";
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = "99999";
+
+  // Resize to screen
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  canvas.width = Math.floor(window.innerWidth * dpr);
+  canvas.height = Math.floor(window.innerHeight * dpr);
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  const colors = ["#E6007E","#3C8DCC","#F5A623","#FFFFFF"];
+  const pieces = [];
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight * 0.45;
+
+  const count = 260;
+  const gravity = 0.12;
+  const drag = 0.992;
+
+  for (let i=0;i<count;i++){
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 6 + Math.random()*10;
+    pieces.push({
+      x: centerX,
+      y: centerY,
+      vx: Math.cos(angle)*speed + (Math.random()*2-1),
+      vy: Math.sin(angle)*speed - (Math.random()*3),
+      w: 6 + Math.random()*8,
+      h: 3 + Math.random()*6,
+      rot: Math.random()*Math.PI,
+      vr: (Math.random()*0.2 - 0.1),
+      color: colors[Math.floor(Math.random()*colors.length)],
       life: 0,
-      max: 0.35 + Math.random()*0.25,
-      color: Math.random() < 0.5 ? "rgba(230,0,126,.95)" : "rgba(60,141,204,.95)"
+      maxLife: 70 + Math.floor(Math.random()*30)
     });
   }
 
-  // remove bubble
-  bubbles = bubbles.filter(x=>x !== b);
+  let frame = 0;
+  function tick(){
+    frame++;
+    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+    for (const p of pieces){
+      p.vx *= drag;
+      p.vy = p.vy*drag + gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      p.life++;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    }
+
+    const alive = pieces.some(p => p.life < p.maxLife && p.y < window.innerHeight + 40);
+    if (alive && frame < 120){
+      requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    }
+  }
+
+  requestAnimationFrame(tick);
 }
+ // ===== Share + Reset Buttons =====
+const shareUrl = window.location.href.split("#")[0];
 
-/* =========================
-   HIT TEST
-========================= */
-function findBubbleAt(x,y){
-  // topmost first
-  for(let i=bubbles.length-1; i>=0; i--){
-    const b = bubbles[i];
-    const dx = x - b.x;
-    const dy = y - b.y;
-    if(Math.sqrt(dx*dx + dy*dy) <= b.r) return b;
-  }
-  return null;
-}
+// Copy link button (iPhone/Safari safe)
+if (copyLinkBtn){
+  copyLinkBtn.addEventListener("click", ()=>{
+    const urlToShare = window.location.href.split("#")[0];
 
-/* =========================
-   DRAW
-========================= */
-function draw(){
-  const rect = stage.getBoundingClientRect();
-  const W = rect.width, H = rect.height;
+    const showCopied = ()=>{
+      const prev = copyLinkBtn.textContent;
+      copyLinkBtn.textContent = "Copied!";
+      setTimeout(()=>copyLinkBtn.textContent = prev || "Copy link", 1200);
+    };
 
-  ctx.clearRect(0,0,W,H);
+    // Best case: Clipboard API (works on GitHub Pages HTTPS)
+    if (navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(urlToShare)
+        .then(showCopied)
+        .catch(()=>fallbackCopy(urlToShare));
+      return;
+    }
 
-  // subtle grid
-  ctx.save();
-  ctx.globalAlpha = 0.10;
-  ctx.strokeStyle = "rgba(11,31,77,.35)";
-  ctx.lineWidth = 1;
-  const step = 46;
-  for(let gx=0; gx<=W; gx+=step){
-    ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke();
-  }
-  for(let gy=0; gy<=H; gy+=step){
-    ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
-  }
-  ctx.restore();
+    // Fallbacks
+    fallbackCopy(urlToShare);
 
-  // bubbles
-  bubbles.forEach(b=>{
-    ctx.save();
+    function fallbackCopy(text){
+      // Try execCommand fallback
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
 
-    // bubble fill
-    ctx.fillStyle = pickColor(b.id);
-    ctx.strokeStyle = "rgba(11,31,77,.18)";
-    ctx.lineWidth = 2;
+      let ok = false;
+      try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+      document.body.removeChild(ta);
 
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-    ctx.fill();
-    ctx.stroke();
-
-    // highlight
-    ctx.globalAlpha = 0.35;
-    ctx.fillStyle = "rgba(255,255,255,.9)";
-    ctx.beginPath();
-    ctx.arc(b.x - b.r*0.35, b.y - b.r*0.35, b.r*0.28, 0, Math.PI*2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-
-    // emoji
-    ctx.fillStyle = "rgba(11,31,77,.95)";
-    ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(b.emoji, b.x, b.y - 10);
-
-    // label
-    ctx.font = "950 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-    ctx.fillText(b.label, b.x, b.y + 14);
-
-    ctx.restore();
-  });
-
-  // particles
-  pops.forEach(p=>{
-    ctx.save();
-    ctx.fillStyle = p.color;
-    ctx.globalAlpha = Math.max(0, 1 - (p.life / p.max));
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-    ctx.fill();
-    ctx.restore();
+      if (ok){
+        showCopied();
+      } else {
+        // Last resort: manual copy prompt
+        prompt("Copy this link:", text);
+      }
+    }
   });
 }
 
-/* =========================
-   LOOP
-========================= */
-function tick(now){
-  if(!running) return;
-
-  if(!lastAt) lastAt = now;
-  const dt = Math.min(0.033, (now - lastAt)/1000);
-  lastAt = now;
-
-  // timer
-  const elapsed = (now - startAt)/1000;
-  const timeLeft = Math.max(0, TIMER_SEC - elapsed);
-  timeLeftEl.textContent = String(Math.ceil(timeLeft));
-
-  // spawn slower + spaced
-  spawnIfNeeded(now);
-
-  // move bubbles
-  const rect = stage.getBoundingClientRect();
-  const W = rect.width, H = rect.height;
-
-  bubbles.forEach(b=>{
-    b.x += b.vx * dt;
-    b.y += b.vy * dt;
-
-    // gentle wall bounce
-    if(b.x < b.r + 10){ b.x = b.r + 10; b.vx *= -1; }
-    if(b.x > W - b.r - 10){ b.x = W - b.r - 10; b.vx *= -1; }
+if (startOverBtn){
+  startOverBtn.addEventListener("click", ()=>{
+    picked = [];
+    renderPicked();
+    leadOverlay.classList.add("hidden");
+    resultsOverlay.classList.add("hidden");
+    thankYouState.classList.add("hidden");
+    leadFormState.classList.remove("hidden");
+    introScreen.classList.remove("hidden");
+    gameContainer.classList.add("hidden");
   });
-
-  // clear bubbles that fall off
-  bubbles = bubbles.filter(b=> b.y < H + 80);
-
-  // particles update
-  pops.forEach(p=>{
-    p.vx *= 0.985;
-    p.vy = p.vy*0.985 + 120*dt; // slight gravity
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    p.life += dt;
-  });
-  pops = pops.filter(p=> p.life < p.max);
-
-  // time end
-  if(timeLeft <= 0){
-    running = false;
-    overlay.innerHTML = (picked.length >= MAX)
-      ? `Time’s up. Tap <b>Continue</b>.`
-      : `Time’s up. Pop faster next time — then tap <b>Reset</b>.`;
-    overlay.classList.add("show");
-    continueBtn.disabled = picked.length < MAX;
-    draw();
-    return;
-  }
-
-  draw();
-  raf = requestAnimationFrame(tick);
 }
 
-function start(){
-  fitCanvas();
-  picked = [];
-  bubbles = [];
-  pops = [];
+  // init
+  renderChoices();
   renderPicked();
-
-  // ✅ ensure all 6 priorities cycle evenly
-  bag = [];
-  refillBag();
-
-  msgEl.textContent = "Tap bubbles to pop your top 3 priorities.";
-  overlay.innerHTML = "Ready? Pop <b>3</b> priorities.";
-  overlay.classList.add("show");
-  setTimeout(()=> overlay.classList.remove("show"), 800);
-
-  running = true;
-  startAt = performance.now();
-  lastAt = 0;
-  nextSpawnAt = performance.now() + 250;
-
-  if(raf) cancelAnimationFrame(raf);
-  raf = requestAnimationFrame(tick);
-}
-
-  msgEl.textContent = "Tap bubbles to pop your top 3 priorities.";
-  overlay.innerHTML = "Ready? Pop <b>3</b> priorities.";
-  overlay.classList.add("show");
-  setTimeout(()=> overlay.classList.remove("show"), 800);
-
-  running = true;
-  startAt = performance.now();
-  lastAt = 0;
-  nextSpawnAt = performance.now() + 250;
-
-  if(raf) cancelAnimationFrame(raf);
-  raf = requestAnimationFrame(tick);
-}
-
-/* =========================
-   INPUT (tap/click)
-========================= */
-function pointerToStageXY(e){
-  const rect = stage.getBoundingClientRect();
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-}
-
-// Click/tap to pop
-stage.addEventListener("pointerdown", (e)=>{
-  if(!running) return;
-  const {x,y} = pointerToStageXY(e);
-  const b = findBubbleAt(x,y);
-  if(b){
-    // prevent accidental scroll on mobile
-    e.preventDefault();
-    popBubble(b);
-  }
-}, { passive:false });
-
-/* =========================
-   BUTTONS / FLOW
-========================= */
-startBtn.addEventListener("click", ()=>{
-  intro.classList.add("hidden");
-  app.classList.remove("hidden");
-  window.scrollTo(0,0);
-  start();
-});
-
-resetBtn.addEventListener("click", ()=>{
-  running = false;
-  if(raf) cancelAnimationFrame(raf);
-  start();
-});
-
-continueBtn.addEventListener("click", ()=>{
-  // You can swap this for your Story/Results overlay
-  overlay.innerHTML = `
-    <div>
-      <div style="font-size:18px; font-weight:950; margin-bottom:8px;">Power-Up Complete</div>
-      <div style="opacity:.85; margin-bottom:10px;">You chose:</div>
-      <div style="font-weight:950;">${picked.slice(0,MAX).map(labelFor).join(" • ")}</div>
-      <div style="margin-top:12px; font-size:12px; opacity:.8;">(Hook this to your next screen.)</div>
-    </div>
-  `;
-  overlay.classList.add("show");
-});
-
-window.addEventListener("resize", ()=>{
-  if(!app.classList.contains("hidden")) fitCanvas();
-});
 </script>
 
 </body>
