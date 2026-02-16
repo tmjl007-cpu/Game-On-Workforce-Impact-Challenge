@@ -1059,37 +1059,44 @@
 </div>
 
 <script>
-// Intro screen controls
-const introScreen = document.getElementById("introScreen");
-const startBtn = document.getElementById("startBtn");
-const gameContainer = document.getElementById("gameContainer");
-const leadFormState = document.getElementById("leadFormState");
-const thankYouState = document.getElementById("thankYouState");
-const shareQr = document.getElementById("shareQr");
-const copyLinkBtn = document.getElementById("copyLinkBtn");
-const startOverBtn = document.getElementById("startOverBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ DOM ready");
 
+  const introScreen = document.getElementById("introScreen");
+  const startBtn = document.getElementById("startBtn");
+  const gameContainer = document.getElementById("gameContainer");
 
-// ---- START BUTTON (single source of truth) ----
-function startGame(e){
-  if (e) { try{ e.preventDefault(); }catch(_){} }
-  if (introScreen) introScreen.classList.add("hidden");
-  if (gameContainer) gameContainer.classList.remove("hidden");
-  window.scrollTo(0,0);
+  function startGame(e){
+    if (e) { try{ e.preventDefault(); }catch(_){} }
+    console.log("✅ Start clicked");
 
-  // 🔥 Start bubble game after layout is visible
-  setTimeout(() => {
-    createBubbles();
-  }, 50);
-}
+    if (introScreen) introScreen.classList.add("hidden");
+    if (gameContainer) gameContainer.classList.remove("hidden");
+    window.scrollTo(0,0);
 
-window.startGame = startGame;
+    setTimeout(() => {
+      if (typeof createBubbles === "function"){
+        createBubbles();
+      } else {
+        console.error("createBubbles not found");
+      }
+    }, 50);
+  }
 
-if (startBtn){
+  window.startGame = startGame;
+
+  if (!startBtn){
+    console.error("startBtn not found");
+    return;
+  }
+
   startBtn.type = "button";
-  startBtn.addEventListener("click", startGame, { passive:false });
-  startBtn.addEventListener("touchend", startGame, { passive:false });
-}
+  startBtn.addEventListener("click", startGame);
+  startBtn.addEventListener("touchend", (e)=>{
+    e.preventDefault();
+    startGame(e);
+  }, { passive:false });
+});
 
   const MAX = 3;
   const behavior = "replaceOldest"; // "block" or "replaceOldest"
