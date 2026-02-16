@@ -1190,19 +1190,17 @@ That’s visibility.`
   }
 };
 
-  const choicesEl = document.getElementById("choices");
-  const spotEl = document.getElementById("spot");
-  let bubbles = [];
-let bubbleRAF = null;
-let bubbleRunning = false;
-
+  const bubbleStage = document.getElementById("bubbleStage");
 const spotEl = document.getElementById("spot");
 const pickedEl = document.getElementById("picked");
-  const pickedEl = document.getElementById("picked");
-  const countEl = document.getElementById("count");
-  const msgEl = document.getElementById("msg");
-  const resetBtn = document.getElementById("resetBtn");
-  const continueBtn = document.getElementById("continueBtn");
+const countEl = document.getElementById("count");
+const msgEl = document.getElementById("msg");
+const resetBtn = document.getElementById("resetBtn");
+const continueBtn = document.getElementById("continueBtn");
+
+let bubbles = [];
+let bubbleRAF = null;
+let bubbleRunning = false;
 
   // Results overlay
   const resultsOverlay = document.getElementById("resultsOverlay");
@@ -1255,23 +1253,109 @@ const CONFERENCE_ENDPOINT =
 }
 
   /* PASTE ALL THESE NEW BUBBLE FUNCTIONS RIGHT HERE */
-function resetBubbles(){ ... }
-function createBubbles(){ ... }
-function startBubbleLoop(){ ... }
-function stopBubbleLoop(){ ... }
-function handleBubblePop(b){ ... }
+function resetBubbles(){
+  bubbles = [];
+  if (bubbleStage) bubbleStage.innerHTML = "";
+}
+
+function createBubbles(){
+  if (!bubbleStage) return;
+
+  resetBubbles();
+
+  const stageRect = bubbleStage.getBoundingClientRect();
+  const stageW = stageRect.width;
+  const stageH = stageRect.height;
+
+  // Create all 6 at once, scattered across top
+  data.forEach((item) => {
+    const el = document.createElement("div");
+    el.className = "bubble";
+    el.dataset.id = item.id;
+    el.innerHTML = `
+      <div>
+        <div class="bTitle">${item.label}</div>
+        <div class="bSub">Tap to pop</div>
+      </div>
+    `;
+
+    const size = Math.min(180, Math.max(120, stageW * 0.34));
+    const x = Math.random() * Math.max(1, (stageW - size));
+    const y = - (Math.random() * 220 + 60); // above the top
+    const speed = 0.55 + Math.random() * 0.55; // slower fall
+
+    const b = { id: item.id, el, x, y, size, speed, popped: false };
+
+    const pop = () => handleBubblePop(b);
+    el.addEventListener("click", pop);
+    el.addEventListener("touchend", (e)=>{ e.preventDefault(); pop(); }, { passive:false });
+
+    bubbleStage.appendChild(el);
+    bubbles.push(b);
+  });
+
+  startBubbleLoop();
+}
+
+function startBubbleLoop(){
+  if (bubbleRunning) return;
+  bubbleRunning = true;
+
+  const tick = () => {
+    if (!bubbleRunning) return;
+
+    const rect = bubbleStage.getBoundingClientRect();
+    const stageW = rect.width;
+    const stageH = rect.height;
+
+    for (const b of bubbles){
+      if (b.popped) continue;
+
+      b.y += b.speed * 2.2;
+
+      if (b.y > stageH + 40){
+        b.y = - (Math.random() * 240 + 80);
+        b.x = Math.random() * Math.max(1, (stageW - b.size));
+      }
+
+      b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
+    }
+
+    bubbleRAF = requestAnimationFrame(tick);
+  };
+
+  bubbleRAF = requestAnimationFrame(tick);
+}
+
+function stopBubbleLoop(){
+  bubbleRunning = false;
+  if (bubbleRAF) cancelAnimationFrame(bubbleRAF);
+  bubbleRAF = null;
+}
+
+function handleBubblePop(b){
+  if (b.popped) return;
+  if (picked.includes(b.id)) return;
+
+  if (picked.length >= MAX){
+    b.el.classList.remove("blocked");
+    void b.el.offsetWidth;
+    b.el.classList.add("blocked");
+    msg("Max of 3 — remove one to add another.");
+    setTimeout(()=>msg(""), 1000);
+    return;
+  }
+
+  addPick(b.id);
+
+  b.popped = true;
+  b.el.classList.add("popping");
+
+  setTimeout(()=>{
+    if (b.el && b.el.parentNode) b.el.parentNode.removeChild(b.el);
+  }, 240);
+}
 function renderPicked(){
-
-  // Clear selected state from all cards
-  document.querySelectorAll(".card").forEach(c=>{
-    c.classList.remove("selected");
-  });
-
-  // Apply selected state to picked cards
-  picked.forEach(id=>{
-    const card = document.querySelector(`.card[data-id="${id}"]`);
-    if (card) card.classList.add("selected");
-  });
 
   pickedEl.innerHTML = "";
 
