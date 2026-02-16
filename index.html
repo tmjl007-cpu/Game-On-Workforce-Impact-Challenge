@@ -290,6 +290,20 @@ const PRIORITIES = [
   { id:"staffing",  label:"Staffing Stability", emoji:"📅" },
 ];
 
+  let bag = [];
+
+function refillBag(){
+  bag = PRIORITIES.map(p=>p.id);
+  for(let i=bag.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [bag[i], bag[j]] = [bag[j], bag[i]];
+  }
+}
+function nextIdFromBag(){
+  if(!bag.length) refillBag();
+  return bag.pop();
+}
+
 function pickColor(id){
   const map = {
     retention: "rgba(230,0,126,.18)",
@@ -340,8 +354,8 @@ let lastAt = 0;
 let raf = 0;
 
 let nextSpawnAt = 0;
-const SPAWN_EVERY_MS = 950;     // slower + spaced out
-const MAX_ON_SCREEN = 3;        // keeps it manageable
+const SPAWN_EVERY_MS = 450;     // slower + spaced out
+const MAX_ON_SCREEN = 6;        // keeps it manageable
 
 /* =========================
    CANVAS
@@ -420,7 +434,8 @@ function addPick(id){
 ========================= */
 function makeBubble(){
   const rect = stage.getBoundingClientRect();
-  const p = PRIORITIES[Math.floor(Math.random()*PRIORITIES.length)];
+  const id = nextIdFromBag();
+const p = PRIORITIES.find(x => x.id === id);
 
   const r = rand(36, 48);   // bigger for iPhone
   const x = rand(r + 12, rect.width - r - 12);
@@ -441,7 +456,7 @@ function makeBubble(){
 
 function spawnIfNeeded(now){
   if(now < nextSpawnAt) return;
-  nextSpawnAt = now + SPAWN_EVERY_MS + rand(-150, 150);
+  nextSpawnAt = now + SPAWN_EVERY_MS + rand(-60, 60);
 
   if(bubbles.length >= MAX_ON_SCREEN) return;
 
@@ -637,6 +652,24 @@ function start(){
   bubbles = [];
   pops = [];
   renderPicked();
+
+  // ✅ ensure all 6 priorities cycle evenly
+  bag = [];
+  refillBag();
+
+  msgEl.textContent = "Tap bubbles to pop your top 3 priorities.";
+  overlay.innerHTML = "Ready? Pop <b>3</b> priorities.";
+  overlay.classList.add("show");
+  setTimeout(()=> overlay.classList.remove("show"), 800);
+
+  running = true;
+  startAt = performance.now();
+  lastAt = 0;
+  nextSpawnAt = performance.now() + 250;
+
+  if(raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+}
 
   msgEl.textContent = "Tap bubbles to pop your top 3 priorities.";
   overlay.innerHTML = "Ready? Pop <b>3</b> priorities.";
