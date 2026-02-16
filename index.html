@@ -1261,6 +1261,18 @@ const msgEl = document.getElementById("msg");
 const resetBtn = document.getElementById("resetBtn");
 const continueBtn = document.getElementById("continueBtn");
 
+  // ✅ add these RIGHT HERE (before let bubbles...)
+const introScreen = document.getElementById("introScreen");
+const gameContainer = document.getElementById("gameContainer");
+
+const leadFormState = document.getElementById("leadFormState");
+const thankYouState = document.getElementById("thankYouState");
+
+const shareQr = document.getElementById("shareQr");
+const copyLinkBtn = document.getElementById("copyLinkBtn");
+const startOverBtn = document.getElementById("startOverBtn");
+
+
 let bubbles = [];
 let bubbleRAF = null;
 let bubbleRunning = false;
@@ -1414,25 +1426,29 @@ function startBubbleLoop(){
 
       b.y += b.speed * 1.35;
 
-if (b.y > stageH + 40){
-  b.y = - (Math.random() * 260 + 120);
-  b.x = Math.random() * Math.max(1, (stageW - b.size));
+      // recycle
+      if (b.y > stageH + 40){
+        b.y = - (Math.random() * 260 + 120);
 
-  applyVariant(b.el);  // 🔥 add this line right here
-}
+        // pick a fresh x (try a few times to avoid stacking)
+        let nx = 0;
+        let t = 0;
+        do {
+          nx = Math.random() * Math.max(1, (stageW - b.size));
+          t++;
+        } while (
+          t < 25 &&
+          bubbles.some(o =>
+            o !== b && !o.popped &&
+            Math.abs((nx + b.size/2) - (o.x + o.size/2)) < (b.size * 0.75)
+          )
+        );
 
-  // re-pick x a few times to avoid stacking on one spot
-  let nx = 0;
-  let t = 0;
-  do {
-    nx = Math.random() * Math.max(1, (stageW - b.size));
-    t++;
-  } while (t < 25 && bubbles.some(o =>
-    o !== b && !o.popped && Math.abs((nx + b.size/2) - (o.x + o.size/2)) < (b.size*0.75)
-  ));
+        b.x = nx;
 
-  b.x = nx;
-}
+        // vary color as it recycles
+        applyVariant(b.el);
+      }
 
       b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
     }
