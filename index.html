@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Priority Power-Up: Bubble Pop</title>
   <style>
+    html, body{
+  width:100%;
+  overflow-x:hidden;
+}
+
     :root{
       --navy:#0B1F4D;
       --navy-dark:#081735;
@@ -136,6 +141,9 @@
     @media (max-width: 620px){
       .stage{ height:400px; }
     }
+    @media (max-width: 480px){
+  .powerupStage{ height:320px; }
+}
     #c{
       width:100%;
       height:100%;
@@ -372,6 +380,15 @@ function fitCanvas(){
 }
 function rand(a,b){ return a + Math.random()*(b-a); }
 
+  function isSelected(id){
+  return picked.includes(id);
+}
+
+function resetBubbleToTop(b, W){
+  // keep it spread out horizontally
+  b.x = rand(40, W - 40);
+  b.y = -rand(30, 180);
+}
 /* =========================
    PICK LOGIC (your rule)
    - pick 1..3 fill
