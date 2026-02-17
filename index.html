@@ -1582,14 +1582,19 @@ function renderPicked(){
 }
 
   function addPick(id){
-    msg("");
-    if (picked.includes(id)) return;
+  msg("");
 
-    if (picked.length < MAX){
-      picked.push(id);
-      renderPicked();
-      return;
-    }
+  if (picked.includes(id)) return;
+
+  if (picked.length >= MAX){
+    msg("Max of 3 — remove one to add another.");
+    setTimeout(()=>msg(""), 1000);
+    return;
+  }
+
+  picked.push(id);
+  renderPicked();
+}
 
     if (behavior === "replaceOldest"){
       picked.shift();
@@ -1599,10 +1604,6 @@ function renderPicked(){
       msg("Spotlight is full — replaced your oldest pick.");
       setTimeout(()=>msg(""), 1200);
 
-      // pulse spotlight
-      spotEl.classList.remove("pulse");
-      void spotEl.offsetWidth;
-      spotEl.classList.add("pulse");
     } else {
       msg("Max of 3 — remove one to add another.");
     }
@@ -1805,16 +1806,6 @@ function closeStory(){
     if (!/^\S+@\S+\.\S+$/.test(email)) return "Please enter a valid email address.";
     return null;
   }
-
-  // Drop zone (desktop drag)
-  spotEl.addEventListener("dragover", (e)=>{ e.preventDefault(); spotEl.classList.add("dragover"); });
-  spotEl.addEventListener("dragleave", ()=> spotEl.classList.remove("dragover"));
-  spotEl.addEventListener("drop", (e)=>{
-    e.preventDefault();
-    spotEl.classList.remove("dragover");
-    const id = e.dataTransfer.getData("text/plain");
-    if (id) addPick(id);
-  });
 
   // Buttons
   if (resetBtn){
