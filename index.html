@@ -1214,7 +1214,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
   const MAX = 3;
-  const behavior = "replaceOldest"; // "block" or "replaceOldest"
+  
 
   // Your selectable areas
   const data = [
@@ -1319,18 +1319,6 @@ const continueBtn = document.getElementById("continueBtn");
 
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
-
-  // ✅ add these RIGHT HERE (before let bubbles...)
-const introScreen = document.getElementById("introScreen");
-const gameContainer = document.getElementById("gameContainer");
-
-const leadFormState = document.getElementById("leadFormState");
-const thankYouState = document.getElementById("thankYouState");
-
-const shareQr = document.getElementById("shareQr");
-const copyLinkBtn = document.getElementById("copyLinkBtn");
-const startOverBtn = document.getElementById("startOverBtn");
-
 
 let bubbles = [];
 let bubbleRAF = null;
@@ -1581,14 +1569,13 @@ function renderPicked(){
   }
 }
 
-  function addPick(id){
+ function addPick(id){
   msg("");
-
   if (picked.includes(id)) return;
 
   if (picked.length >= MAX){
-    msg("Max of 3 — remove one to add another.");
-    setTimeout(()=>msg(""), 1000);
+    msg("Max of 3 — keep popping to continue.");
+    setTimeout(()=>msg(""), 900);
     return;
   }
 
@@ -1596,18 +1583,6 @@ function renderPicked(){
   renderPicked();
 }
 
-    if (behavior === "replaceOldest"){
-      picked.shift();
-      picked.push(id);
-      renderPicked();
-
-      msg("Spotlight is full — replaced your oldest pick.");
-      setTimeout(()=>msg(""), 1200);
-
-    } else {
-      msg("Max of 3 — remove one to add another.");
-    }
-  }
 
   function removePick(id){
     picked = picked.filter(x=>x!==id);
